@@ -1,16 +1,16 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2007-2008  Neil Roberts
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -113,14 +113,14 @@ rbclt_call_init_func (int argc, VALUE *argv, RBCLTInitFunc func)
   /* Initialize clutter */
   init_argc++;
   eval = (* func) (&init_argc, &args_copy);
-  
+
   /* If it worked then copy the altered arguments back */
   if (eval == CLUTTER_INIT_SUCCESS)
     {
       rb_ary_clear (init_args);
 
       for (i = 1; i < init_argc; i++)
-	rb_ary_push (init_args, rb_str_new2 (args_copy[i]));
+        rb_ary_push (init_args, rb_str_new2 (args_copy[i]));
     }
 
   free (args_copy);
@@ -129,7 +129,7 @@ rbclt_call_init_func (int argc, VALUE *argv, RBCLTInitFunc func)
   if (eval != CLUTTER_INIT_SUCCESS)
     {
       VALUE ex = rb_exc_new2 (rbclt_c_clutter_init_error,
-			      "Failed to initalise Clutter");
+                              "Failed to initalise Clutter");
       rb_iv_set (ex, "@errnum", GENUM2RVAL (eval, CLUTTER_TYPE_INIT_ERROR));
       rb_exc_raise (ex);
     }
@@ -153,7 +153,7 @@ rbclt_num_to_guint8 (VALUE val)
     return (guint8) num;
 
   rb_raise (rb_eRangeError, "integer %ld too %s to convert to `guint8'",
-	    num, s);
+            num, s);
 }
 
 guint16
@@ -170,7 +170,7 @@ rbclt_num_to_guint16 (VALUE val)
     return (guint16) num;
 
   rb_raise (rb_eRangeError, "integer %ld too %s to convert to `guint16'",
-	    num, s);
+            num, s);
 }
 
 ClutterFixed
@@ -222,11 +222,11 @@ rbclt_connect_flags_get_type (void)
       && (etype = g_type_from_name ("GConnectFlags")) == 0)
     {
       static const GFlagsValue values[] =
-	{
-	  { G_CONNECT_AFTER, "G_CONNECT_AFTER", "after" },
-	  { G_CONNECT_SWAPPED, "G_CONNECT_SWAPPED", "swapped" },
-	  { 0, NULL, NULL }
-	};
+        {
+          { G_CONNECT_AFTER, "G_CONNECT_AFTER", "after" },
+          { G_CONNECT_SWAPPED, "G_CONNECT_SWAPPED", "swapped" },
+          { 0, NULL, NULL }
+        };
 
       etype = g_flags_register_static ("GConnectFlags", values);
     }
@@ -243,26 +243,26 @@ Init_clutter ()
 
   rbclt_c_clutter = rb_define_module ("Clutter");
   rbclt_c_clutter_error = rb_define_class_under (rbclt_c_clutter, "Error",
-						 rb_eException);
+                                                 rb_eException);
 
   /* Version constants. Not defining a regular VERSION constant
      because under Ruby-GTK that constant refers to the version of the
      actual library binary, but there isn't a way to get that with
      Clutter yet. */
   rb_define_const (rbclt_c_clutter, "BINDING_VERSION",
-		   rb_ary_new3 (3, INT2FIX (RBCLUTTER_MAJOR_VERSION),
-				INT2FIX (RBCLUTTER_MINOR_VERSION),
-				INT2FIX (RBCLUTTER_MICRO_VERSION)));
+                   rb_ary_new3 (3, INT2FIX (RBCLUTTER_MAJOR_VERSION),
+                                INT2FIX (RBCLUTTER_MINOR_VERSION),
+                                INT2FIX (RBCLUTTER_MICRO_VERSION)));
   rb_define_const (rbclt_c_clutter, "BUILD_VERSION",
-		   rb_ary_new3 (3, INT2FIX (CLUTTER_MAJOR_VERSION),
-				INT2FIX (CLUTTER_MINOR_VERSION),
-				INT2FIX (CLUTTER_MICRO_VERSION)));
-  
+                   rb_ary_new3 (3, INT2FIX (CLUTTER_MAJOR_VERSION),
+                                INT2FIX (CLUTTER_MINOR_VERSION),
+                                INT2FIX (CLUTTER_MICRO_VERSION)));
+
   G_DEF_CLASS (CLUTTER_TYPE_GRAVITY, "Gravity", rbclt_c_clutter);
   G_DEF_CONSTANTS (rbclt_c_clutter, CLUTTER_TYPE_GRAVITY, "CLUTTER_");
 
   G_DEF_CLASS (CLUTTER_TYPE_ROTATE_DIRECTION, "RotateDirection",
-	       rbclt_c_clutter);
+               rbclt_c_clutter);
   G_DEF_CONSTANTS (rbclt_c_clutter, CLUTTER_TYPE_ROTATE_DIRECTION, "CLUTTER_");
 
   G_DEF_CLASS (CLUTTER_TYPE_ROTATE_DIRECTION, "RotateAxis", rbclt_c_clutter);
@@ -278,12 +278,12 @@ Init_clutter ()
     G_DEF_CLASS (rbclt_connect_flags_get_type (), "ConnectFlags", mglib);
 
   rbclt_c_clutter_init_error = rb_define_class_under (rbclt_c_clutter,
-						      "InitError",
-						      rbclt_c_clutter_error);
+                                                      "InitError",
+                                                      rbclt_c_clutter_error);
   rb_define_attr (rbclt_c_clutter_init_error, "errnum", Qtrue, Qfalse);
   G_DEF_CLASS (CLUTTER_TYPE_INIT_ERROR, "Code", rbclt_c_clutter_init_error);
   G_DEF_CONSTANTS (rbclt_c_clutter_init_error, CLUTTER_TYPE_INIT_ERROR,
-		   "CLUTTER_INIT_");
+                   "CLUTTER_INIT_");
 
   rbclt_main_init ();
   rbclt_actor_init ();

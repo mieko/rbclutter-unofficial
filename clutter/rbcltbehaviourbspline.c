@@ -1,16 +1,16 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2007  Neil Roberts
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -36,7 +36,7 @@ rbclt_behaviour_bspline_initialize (int argc, VALUE *argv, VALUE self)
     clutter_behaviour_set_alpha (behaviour, RVAL2GOBJ (argv[0]));
   for (i = 1; i < argc; i++)
     clutter_behaviour_bspline_append_knot (CLUTTER_BEHAVIOUR_BSPLINE (behaviour),
-					   RVAL2BOXED (argv[i], CLUTTER_TYPE_KNOT));
+                                           RVAL2BOXED (argv[i], CLUTTER_TYPE_KNOT));
 
   return Qnil;
 }
@@ -46,7 +46,7 @@ rbclt_behaviour_bspline_append_knot (int argc, VALUE *argv, VALUE self)
 {
   ClutterBehaviourBspline *bbspline = CLUTTER_BEHAVIOUR_BSPLINE (RVAL2GOBJ (self));
   int i;
-  
+
   for (i = 0; i < argc; i++)
     clutter_behaviour_bspline_append_knot (bbspline, RVAL2BOXED (argv[i], CLUTTER_TYPE_KNOT));
 
@@ -101,7 +101,7 @@ rbclt_behaviour_bspline_adjust (VALUE self, VALUE offset, VALUE knot)
 {
   ClutterBehaviourBspline *bbspline = CLUTTER_BEHAVIOUR_BSPLINE (RVAL2GOBJ (self));
   clutter_behaviour_bspline_adjust (bbspline, NUM2UINT (offset),
-				    (ClutterKnot *) RVAL2BOXED (knot, CLUTTER_TYPE_KNOT));
+                                    (ClutterKnot *) RVAL2BOXED (knot, CLUTTER_TYPE_KNOT));
   return self;
 }
 
@@ -109,8 +109,8 @@ static VALUE
 rbclt_behaviour_bspline_set_origin (VALUE self, VALUE knot)
 {
   ClutterBehaviourBspline *bbspline = CLUTTER_BEHAVIOUR_BSPLINE (RVAL2GOBJ (self));
-  clutter_behaviour_bspline_set_origin (bbspline, 
-					(ClutterKnot *) RVAL2BOXED (knot, CLUTTER_TYPE_KNOT));
+  clutter_behaviour_bspline_set_origin (bbspline,
+                                        (ClutterKnot *) RVAL2BOXED (knot, CLUTTER_TYPE_KNOT));
   return self;
 }
 

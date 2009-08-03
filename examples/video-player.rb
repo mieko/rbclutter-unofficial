@@ -183,8 +183,8 @@ app.control_seekbar.opacity = 0x99
 app.control_label = Clutter::Label.new("Sans Bold 24", File.basename(ARGV[0]))
 app.control_label.color = control_color1
 
-app.control.add(app.control_bg, 
-                app.control_play, 
+app.control.add(app.control_bg,
+                app.control_play,
                 app.control_pause,
                 app.control_seek1,
                 app.control_seek2,

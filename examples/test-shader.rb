@@ -156,7 +156,7 @@ $shader_no = 0
 def set_shader(actor, new_no)
   if new_no >= 0 && new_no < SHADERS.length
     $shader_no = new_no
-      
+
     print("settings shaders[#{$shader_no}] " \
           "named '#{SHADERS[$shader_no][0]}'\n")
 
@@ -185,7 +185,7 @@ def set_shader(actor, new_no)
       actor.set_shader_param("x_step", 1.0 / actor.width)
       actor.set_shader_param("y_step", 1.0 / actor.height)
     end
-  end 
+  end
 end
 
 def button_release_cb(actor, event)
@@ -227,9 +227,9 @@ stage << actor
 actor.set_shader_param("brightness", 0.4)
 actor.set_shader_param("contrast", -1.9)
 
-actor.reactive = true                                 
+actor.reactive = true
 
-actor.signal_connect("button-release-event") do |actor, event| 
+actor.signal_connect("button-release-event") do |actor, event|
   button_release_cb(actor, event)
 end
 

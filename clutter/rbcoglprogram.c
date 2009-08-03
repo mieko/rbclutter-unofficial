@@ -1,16 +1,16 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2008  Neil Roberts
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -100,7 +100,7 @@ rb_cogl_program_get_uniform_location (VALUE self, VALUE uniform_name)
   COGLint location;
 
   location = cogl_program_get_uniform_location (program,
-						StringValuePtr (uniform_name));
+                                                StringValuePtr (uniform_name));
 
   return INT2NUM (location);
 }
@@ -117,7 +117,7 @@ void
 rb_cogl_program_init ()
 {
   VALUE klass = rb_define_class_under (rbclt_c_cogl, "Program",
-				       rb_cObject);
+                                       rb_cObject);
   rb_c_cogl_program = klass;
 
   rb_define_alloc_func (klass, rb_cogl_program_allocate);
@@ -128,7 +128,7 @@ rb_cogl_program_init ()
   rb_define_method (klass, "link", rb_cogl_program_link, 0);
   rb_define_singleton_method (klass, "use", rb_cogl_program_use, 1);
   rb_define_method (klass, "get_uniform_location",
-		    rb_cogl_program_get_uniform_location, 1);
+                    rb_cogl_program_get_uniform_location, 1);
   rb_define_singleton_method (klass, "uniform",
-			      rb_cogl_program_uniform, 2);
+                              rb_cogl_program_uniform, 2);
 }

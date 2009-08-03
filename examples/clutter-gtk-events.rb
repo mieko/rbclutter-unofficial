@@ -26,7 +26,7 @@ def on_opacity_changed(button, app)
   app.hand.opacity = button.value
 end
 
-app = EventApp.new  
+app = EventApp.new
 
 Clutter::Gtk.init
 
@@ -38,7 +38,7 @@ widget.set_default_size(800, 600)
 widget.resizable = true
 widget.border_width = 12
 widget.signal_connect("destroy") { Gtk::main_quit }
- 
+
 # Create our layout box
 vbox = Gtk::VBox.new(false, 12)
 app.window.add(vbox)

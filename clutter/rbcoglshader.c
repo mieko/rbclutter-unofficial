@@ -1,16 +1,16 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2008  Neil Roberts
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -67,7 +67,7 @@ static VALUE
 rb_cogl_shader_source (VALUE self, VALUE source)
 {
   cogl_shader_source (rb_cogl_shader_get_handle (self),
-		      StringValuePtr (source));
+                      StringValuePtr (source));
 
   return self;
 }
@@ -85,7 +85,7 @@ rb_cogl_shader_get_info_log (VALUE self)
 {
   CoglHandle shader = rb_cogl_shader_get_handle (self);
   char buf[512];
-  
+
   buf[0] = '\0';
   buf[sizeof (buf) - 1] = '\0';
   cogl_shader_get_info_log (shader, sizeof (buf) - 1, buf);
@@ -108,7 +108,7 @@ void
 rb_cogl_shader_init ()
 {
   VALUE klass = rb_define_class_under (rbclt_c_cogl, "Shader",
-				       rb_cObject);
+                                       rb_cObject);
   rb_c_cogl_shader = klass;
 
   rb_define_alloc_func (klass, rb_cogl_shader_allocate);

@@ -1,16 +1,16 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2007-2008  Neil Roberts
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -66,13 +66,13 @@ rbcltc_cairo_create (int argc, VALUE *argv, VALUE self)
     cr = clutter_cairo_create (cairo);
   else if (argc == 4)
     cr = clutter_cairo_create_region (cairo, NUM2INT (argv[0]),
-				      NUM2INT (argv[1]),
-				      NUM2UINT (argv[2]),
-				      NUM2UINT (argv[3]));
+                                      NUM2INT (argv[1]),
+                                      NUM2UINT (argv[2]),
+                                      NUM2UINT (argv[3]));
   else
     rb_raise (rb_eArgError,
-	      "wrong number of arguments (%i for 0 or 4)", argc);
-	      
+              "wrong number of arguments (%i for 0 or 4)", argc);
+
 
   ret = CRCONTEXT2RVAL (cr);
   /* The context returned by clutter_cairo_create has a reference
@@ -108,13 +108,13 @@ rbcltc_cairo_context_finish (VALUE self)
   /* Destroy the old context so that Clutter will update the texture */
   if (old_cr)
     cairo_destroy (old_cr);
-  
+
   return self;
 }
 
 static VALUE
 rbcltc_cairo_create_region (VALUE self, VALUE x, VALUE y,
-			    VALUE width, VALUE height)
+                            VALUE width, VALUE height)
 {
   VALUE argv[4] = { x, y, width, height };
 
@@ -146,7 +146,7 @@ Init_clutter_cairo ()
   rb_define_method (klass, "create_region", rbcltc_cairo_create_region, 4);
   rb_define_method (klass, "surface_resize", rbcltc_cairo_surface_resize, 2);
   rb_define_singleton_method (klass, "set_source_color",
-			      rbcltc_cairo_set_source_color, 2);
+                              rbcltc_cairo_set_source_color, 2);
 
   /* Before version 0.7.0, the Ruby bindings of cairo had no 'destroy'
      method. Instead this was called when the object gets reaped by

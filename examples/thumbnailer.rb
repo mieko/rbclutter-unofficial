@@ -2,17 +2,17 @@
 
 # Ruby bindings for the Clutter 'interactive canvas' library.
 # Copyright (C) 2007-2008  Neil Roberts
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -58,7 +58,7 @@ class Thumbnailer
         actor.set_position(start_x, start_y)
 
         stage << actor
-        
+
         timeline = Clutter::Timeline.new(30, 30)
         alpha = Clutter::Alpha.new(timeline, Clutter::Alpha::SINE_INC)
         @behaviours << behaviour = Clutter::BehaviourPath.new(alpha)
@@ -85,7 +85,7 @@ class Thumbnailer
           # Start removing the thumbnails
           @removing = @behaviours
           @removed_count = 0
-          @behaviours.each do |b| 
+          @behaviours.each do |b|
             b.alpha.set_func(Clutter::Alpha::SINE_DEC)
             b.alpha.timeline.rewind.start
           end
@@ -121,7 +121,7 @@ class Thumbnailer
                                                   pixbuf.height,
                                                   pixbuf.rowstride,
                                                   pixbuf.has_alpha? ? 4 : 3, 0)
-      
+
       @next_load_actor += 1
     end
   end

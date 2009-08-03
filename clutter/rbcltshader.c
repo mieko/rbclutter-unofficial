@@ -1,16 +1,16 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2008  Neil Roberts
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
@@ -62,7 +62,7 @@ rbclt_shader_set_uniform (VALUE self, VALUE name, VALUE value)
   /* This could potentially overload to call other variants of
      set_uniform if there were any */
   clutter_shader_set_uniform_1f (shader, StringValuePtr (name),
-				 NUM2DBL (value));
+                                 NUM2DBL (value));
   return self;
 }
 
@@ -77,7 +77,7 @@ rbclt_shader_init ()
   rb_define_method (klass, "set_uniform", rbclt_shader_set_uniform, 2);
 
   G_DEF_ERROR (CLUTTER_SHADER_ERROR, "ShaderError", rbclt_c_clutter,
-	       rb_eRuntimeError, CLUTTER_TYPE_SHADER_ERROR);
+               rb_eRuntimeError, CLUTTER_TYPE_SHADER_ERROR);
 
   G_DEF_SETTERS (klass);
 }
