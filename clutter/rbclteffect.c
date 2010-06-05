@@ -18,10 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-effect.h>
-#include <clutter/clutter-version.h>
-#include <clutter/clutter-types.h>
-#include <clutter/clutter-enum-types.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 #include "rbcltalphafunc.h"

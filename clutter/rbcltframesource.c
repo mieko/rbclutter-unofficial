@@ -17,7 +17,7 @@
  * MA  02110-1301  USA
  */
 
-#include <clutter/clutter-frame-source.h>
+#include <clutter/clutter.h>
 #include <rbgobject.h>
 
 #include "rbclutter.h"

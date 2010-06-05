@@ -18,8 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-label.h>
-#include <clutter/clutter-color.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 

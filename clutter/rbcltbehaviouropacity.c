@@ -18,9 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-actor.h>
-#include <clutter/clutter-behaviour.h>
-#include <clutter/clutter-behaviour-opacity.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 

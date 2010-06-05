@@ -18,7 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-score.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 

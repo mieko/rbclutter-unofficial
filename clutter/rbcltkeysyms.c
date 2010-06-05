@@ -19,7 +19,7 @@
 
 #include <ruby.h>
 #include <rbgobject.h>
-#include <clutter/clutter-keysyms.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 

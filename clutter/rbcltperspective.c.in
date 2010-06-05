@@ -17,7 +17,7 @@
  * MA  02110-1301  USA
  */
 
-#include <clutter/clutter-stage.h>
+#include <clutter/clutter.h>
 
 /* MAKE_BOXED(ClutterPerspective fovy:ClutterFixed aspect:ClutterFixed
    z_near:ClutterFixed z_far:ClutterFixed) */

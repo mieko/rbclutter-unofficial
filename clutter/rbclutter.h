@@ -22,9 +22,7 @@
 
 #include <ruby.h>
 #include <glib/gtypes.h>
-#include <clutter/clutter-fixed.h>
-#include <clutter/clutter-units.h>
-#include <clutter/clutter-main.h>
+#include <clutter/clutter.h>
 
 #define RBCLUTTER_MAJOR_VERSION 0
 #define RBCLUTTER_MINOR_VERSION 8

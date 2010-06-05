@@ -18,8 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-child-meta.h>
-#include <clutter/clutter-container.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 

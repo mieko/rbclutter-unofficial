@@ -18,8 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-media.h>
-#include <clutter/clutter-actor.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 

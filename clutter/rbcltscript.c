@@ -18,8 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-script.h>
-#include <clutter/clutter-enum-types.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 

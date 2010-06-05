@@ -18,7 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-model.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 #include "rbcltcallbackfunc.h"

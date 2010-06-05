@@ -18,7 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-stage-manager.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 #include "rbcltstagemanager.h"

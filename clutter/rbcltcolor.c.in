@@ -17,7 +17,7 @@
  * MA  02110-1301  USA
  */
 
-#include <clutter/clutter-color.h>
+#include <clutter/clutter.h>
 
 /* MAKE_BOXED(ClutterColor INIT:0xff red:guint8 green:guint8 blue:guint8 alpha:guint8) */
 

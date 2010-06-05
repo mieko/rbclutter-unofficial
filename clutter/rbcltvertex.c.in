@@ -17,7 +17,7 @@
  * MA  02110-1301  USA
  */
 
-#include <clutter/clutter-types.h>
+#include <clutter/clutter.h>
 
 /* MAKE_BOXED(ClutterVertex x:ClutterUnit y:ClutterUnit z:ClutterUnit) */
 

@@ -19,7 +19,7 @@
 
 #include <rbgobject.h>
 #include <ruby.h>
-#include <clutter/clutter-alpha.h>
+#include <clutter/clutter.h>
 
 #include "rbcltalphafunc.h"
 #include "rbcltcallbackfunc.h"

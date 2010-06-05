@@ -18,7 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-alpha.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 #include "rbcltalphafunc.h"

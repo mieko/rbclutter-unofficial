@@ -17,7 +17,7 @@
  * MA  02110-1301  USA
  */
 
-#include <clutter/clutter-actor.h>
+#include <clutter/clutter.h>
 
 /* MAKE_BOXED(ClutterActorBox x1:ClutterUnit y1:ClutterUnit x2:ClutterUnit y2:ClutterUnit) */
 

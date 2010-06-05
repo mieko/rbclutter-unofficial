@@ -18,7 +18,7 @@
  */
 
 #include <rbgobject.h>
-#include <clutter/clutter-clone-texture.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 

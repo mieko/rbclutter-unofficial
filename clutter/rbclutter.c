@@ -20,9 +20,7 @@
 #include <ruby.h>
 #include <rbgobject.h>
 #include <glib-object.h>
-#include <clutter/clutter-version.h>
-#include <clutter/clutter-enum-types.h>
-#include <clutter/clutter-fixed.h>
+#include <clutter/clutter.h>
 
 #include "rbclutter.h"
 #include "rbcltstagemanager.h"
