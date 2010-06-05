@@ -24,7 +24,7 @@ def show_fail
   exit(1)
 end
 
-SUBDIRS = %w{ clutter clutter-cairo clutter-gtk clutter-gst }
+SUBDIRS = %w{ clutter clutter-gtk clutter-gst }
 
 cwd = Pathname.getwd
 
