@@ -2,7 +2,7 @@
 
 # Adapted from the cairo-texture.py example in PyClutter
 
-require 'clutter_cairo'
+require 'clutter'
 
 Clutter::init
 
@@ -12,12 +12,12 @@ stage.set_size(400,300)
 
 stage.signal_connect('button-press-event') { Clutter::main_quit }
 
-cairo_tex = Clutter::Cairo.new(200,200)
+cairo_tex = Clutter::CairoTexture.new(200,200)
 cairo_tex.set_position((stage.width - 200) / 2,
                        (stage.height - 200) / 2)
 
-# we obtain a cairo context from the Clutter::Cairo texture and then
-# we can use it with the cairo primitives to draw on it.
+# we obtain a cairo context from the Clutter::CairoTexture and then we
+# can use it with the cairo primitives to draw on it.
 cairo_tex.create do |context|
   # we scale the context to the size of the surface
   context.scale(200, 200)
@@ -32,17 +32,18 @@ cairo_tex.create do |context|
   # clutter-cairo to update the texture
 end
 
-# Clutter::Cairo is a Clutter::Actor, so we can manipulate it as any
-# other actor
+# Clutter::CairoTexture is a Clutter::Actor, so we can manipulate it
+# as any other actor
 center_x = cairo_tex.width / 2
 center_y = cairo_tex.height / 2
 cairo_tex.set_rotation(Clutter::Y_AXIS, 45.0, center_x, center_y, 0)
 stage << cairo_tex
 
-# Clutter::Cairo is also a Clutter::Texture, so we can save memory
-# when dealing with multiple copies by simply cloning it and
+# Clutter::CairoTexture is also a Clutter::Texture, so we can save
+# memory when dealing with multiple copies by simply cloning it and
 # manipulating the clones
-clone_tex = Clutter::CloneTexture.new(cairo_tex)
+clone_tex = Clutter::Texture.new
+clone_tex.cogl_texture = cairo_tex.cogl_texture
 clone_tex.set_position((stage.width - 200) / 2,
                        (stage.height - 200) / 2)
 clone_tex.set_rotation(Clutter::Y_AXIS, -45.0, center_x, center_y, 0)
