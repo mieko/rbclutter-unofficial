@@ -35,9 +35,6 @@ extern VALUE rbclt_c_cogl;
 void rbclt_initialize_unowned (VALUE obj, gpointer gobj);
 guint8 rbclt_num_to_guint8 (VALUE val);
 guint16 rbclt_num_to_guint16 (VALUE val);
-ClutterFixed rbclt_num_to_fixed (VALUE val);
-ClutterUnit rbclt_num_to_units (VALUE val);
-ClutterAngle rbclt_num_to_angle (VALUE angle);
 GType rbclt_connect_flags_get_type (void) G_GNUC_CONST;
 
 typedef ClutterInitError (* RBCLTInitFunc) (int *argc, char ***argv);

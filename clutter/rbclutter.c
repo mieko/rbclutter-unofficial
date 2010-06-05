@@ -171,34 +171,6 @@ rbclt_num_to_guint16 (VALUE val)
             num, s);
 }
 
-ClutterFixed
-rbclt_num_to_fixed (VALUE val)
-{
-  /* If the number is a fixed num then there's no need to go through a
-     double first */
-  if (FIXNUM_P (val))
-    return CLUTTER_INT_TO_FIXED (FIX2INT (val));
-  else
-    return CLUTTER_FLOAT_TO_FIXED (NUM2DBL (val));
-}
-
-ClutterUnit
-rbclt_num_to_units (VALUE val)
-{
-  /* If the number is a fixed num then there's no need to go through a
-     double first */
-  if (FIXNUM_P (val))
-    return CLUTTER_UNITS_FROM_INT (FIX2INT (val));
-  else
-    return CLUTTER_UNITS_FROM_FLOAT (NUM2DBL (val));
-}
-
-ClutterAngle
-rbclt_num_to_angle (VALUE val)
-{
-  return CLUTTER_ANGLE_FROM_DEG (NUM2DBL (val));
-}
-
 void
 rbclt_initialize_unowned (VALUE obj, gpointer gobj)
 {
