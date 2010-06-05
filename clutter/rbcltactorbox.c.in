@@ -19,7 +19,7 @@
 
 #include <clutter/clutter.h>
 
-/* MAKE_BOXED(ClutterActorBox x1:ClutterUnit y1:ClutterUnit x2:ClutterUnit y2:ClutterUnit) */
+/* MAKE_BOXED(ClutterActorBox x1:gfloat y1:gfloat x2:gfloat y2:gfloat) */
 
 void
 rbclt_actor_box_init ()

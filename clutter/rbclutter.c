@@ -71,6 +71,7 @@ extern void rbclt_score_init ();
 extern void rbclt_model_init ();
 extern void rbclt_list_model_init ();
 extern void rbclt_fog_init ();
+extern void rbclt_path_init ();
 
 extern void rb_cogl_init ();
 extern void rb_cogl_texture_init ();
@@ -264,14 +265,12 @@ Init_clutter ()
   rbclt_child_meta_init ();
   rbclt_stage_init ();
   rbclt_color_init ();
-  rbclt_label_init ();
   rbclt_group_init ();
   rbclt_texture_init ();
   rbclt_knot_init ();
   rbclt_timeline_init ();
   rbclt_alpha_init ();
   rbclt_behaviour_init ();
-  rbclt_behaviour_bspline_init ();
   rbclt_behaviour_depth_init ();
   rbclt_behaviour_ellipse_init ();
   rbclt_behaviour_opacity_init ();
@@ -281,10 +280,7 @@ Init_clutter ()
   rbclt_perspective_init ();
   rbclt_event_init ();
   rbclt_keysyms_init ();
-  rbclt_effect_init ();
-  rbclt_entry_init ();
   rbclt_rectangle_init ();
-  rbclt_clone_texture_init ();
   rbclt_feature_init ();
   rbclt_backend_init ();
   rbclt_media_init ();
@@ -297,6 +293,7 @@ Init_clutter ()
   rbclt_model_init ();
   rbclt_list_model_init ();
   rbclt_fog_init ();
+  rbclt_path_init ();
 
   rb_cogl_init ();
   rb_cogl_texture_init ();

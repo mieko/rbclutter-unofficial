@@ -133,14 +133,6 @@ rbclt_actor_paint (VALUE self)
 }
 
 static VALUE
-rbclt_actor_pick (VALUE self, VALUE color)
-{
-  ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
-  clutter_actor_pick (actor, ((ClutterColor *) RVAL2BOXED (self, CLUTTER_TYPE_COLOR)));
-  return self;
-}
-
-static VALUE
 rbclt_actor_queue_redraw (VALUE self)
 {
   ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
@@ -169,7 +161,7 @@ rbclt_actor_get_preferred_width (int argc, VALUE *argv, VALUE self)
 {
   ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
   VALUE for_height;
-  ClutterUnit min_width, natural_width;
+  gfloat min_width, natural_width;
 
   rb_scan_args (argc, argv, "01", &for_height);
 
@@ -177,9 +169,8 @@ rbclt_actor_get_preferred_width (int argc, VALUE *argv, VALUE self)
                                      NIL_P (for_height)
                                      ? -1 : NUM2INT (for_height),
                                      &min_width, &natural_width);
-  return rb_ary_new3 (2,
-                      rb_float_new (CLUTTER_UNITS_TO_FLOAT (min_width)),
-                      rb_float_new (CLUTTER_UNITS_TO_FLOAT (natural_width)));
+  return rb_ary_new3 (2, rb_float_new (min_width),
+                      rb_float_new (natural_width));
 }
 
 static VALUE
@@ -187,7 +178,7 @@ rbclt_actor_get_preferred_height (int argc, VALUE *argv, VALUE self)
 {
   ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
   VALUE for_width;
-  ClutterUnit min_height, natural_height;
+  gfloat min_height, natural_height;
 
   rb_scan_args (argc, argv, "01", &for_width);
 
@@ -196,23 +187,23 @@ rbclt_actor_get_preferred_height (int argc, VALUE *argv, VALUE self)
                                       ? -1 : NUM2INT (for_width),
                                       &min_height, &natural_height);
   return rb_ary_new3 (2,
-                      rb_float_new (CLUTTER_UNITS_TO_FLOAT (min_height)),
-                      rb_float_new (CLUTTER_UNITS_TO_FLOAT (natural_height)));
+                      rb_float_new (min_height),
+                      rb_float_new (natural_height));
 }
 
 static VALUE
 rbclt_actor_get_preferred_size (VALUE self)
 {
   ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
-  ClutterUnit min_width, min_height, natural_width, natural_height;
+  gfloat min_width, min_height, natural_width, natural_height;
 
   clutter_actor_get_preferred_size (actor, &min_width, &min_height,
                                     &natural_width, &natural_height);
 
-  return rb_ary_new3 (4, rb_float_new (CLUTTER_UNITS_TO_FLOAT (min_width)),
-                      rb_float_new (CLUTTER_UNITS_TO_FLOAT (min_height)),
-                      rb_float_new (CLUTTER_UNITS_TO_FLOAT (natural_width)),
-                      rb_float_new (CLUTTER_UNITS_TO_FLOAT (natural_height)));
+  return rb_ary_new3 (4, rb_float_new (min_width),
+                      rb_float_new (min_height),
+                      rb_float_new (natural_width),
+                      rb_float_new (natural_height));
 }
 
 static VALUE
@@ -235,18 +226,6 @@ rbclt_actor_allocate_preferred_size (VALUE self, VALUE origin_changed)
   clutter_actor_allocate_preferred_size (actor, RTEST (origin_changed));
 
   return self;
-}
-
-static VALUE
-rbclt_actor_get_allocation_coords (VALUE self)
-{
-  ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
-  gint x_1, y_1, x_2, y_2;
-
-  clutter_actor_get_allocation_coords (actor, &x_1, &y_1, &x_2, &y_2);
-
-  return rb_ary_new3 (4, INT2NUM (x_1), INT2NUM (y_1),
-                      INT2NUM (x_2), INT2NUM (y_2));
 }
 
 static VALUE
@@ -339,9 +318,9 @@ static VALUE
 rbclt_actor_get_transformed_size (VALUE self)
 {
   ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
-  guint width, height;
+  gfloat width, height;
   clutter_actor_get_transformed_size (actor, &width, &height);
-  return rb_ary_new3 (2, INT2NUM (width), INT2NUM (height));
+  return rb_ary_new3 (2, rb_float_new (width), rb_float_new (height));
 }
 
 static VALUE
@@ -356,9 +335,9 @@ static VALUE
 rbclt_actor_get_transformed_position (VALUE self)
 {
   ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
-  gint x, y;
+  gfloat x, y;
   clutter_actor_get_transformed_position (actor, &x, &y);
-  return rb_ary_new3 (2, INT2NUM (x), INT2NUM (y));
+  return rb_ary_new3 (2, rb_float_new (x), rb_float_new (y));
 }
 
 static VALUE
@@ -379,7 +358,7 @@ static VALUE
 rbclt_actor_get_rotation (VALUE self, VALUE axis)
 {
   gdouble angle;
-  gint x = 0, y = 0, z = 0;
+  gfloat x = 0, y = 0, z = 0;
   ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
 
   angle = clutter_actor_get_rotation (actor,
@@ -388,7 +367,7 @@ rbclt_actor_get_rotation (VALUE self, VALUE axis)
                                       &x, &y, &z);
 
   return rb_ary_new3 (4, rb_float_new (angle),
-                      INT2NUM (x), INT2NUM (y), INT2NUM (z));
+                      rb_float_new (x), rb_float_new (y), rb_float_new (z));
 }
 
 static VALUE
@@ -516,9 +495,9 @@ static VALUE
 rbclt_actor_size (VALUE self)
 {
   ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
-  guint width, height;
+  gfloat width, height;
   clutter_actor_get_size (actor, &width, &height);
-  return rb_ary_new3 (2, UINT2NUM (width), UINT2NUM (height));
+  return rb_ary_new3 (2, rb_float_new (width), rb_float_new (height));
 }
 
 static VALUE
@@ -583,8 +562,10 @@ static VALUE
 rbclt_actor_set_shader_param (VALUE self, VALUE param, VALUE value)
 {
   ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
-  clutter_actor_set_shader_param (actor, StringValuePtr (param),
-                                  NUM2DBL (value));
+  GValue gval = { 0, };
+  g_value_init (&gval, RVAL2GTYPE (value));
+  clutter_actor_set_shader_param (actor, StringValuePtr (param), &gval);
+  g_value_unset (&gval);
   return self;
 }
 
@@ -660,7 +641,6 @@ rbclt_actor_init ()
   rb_define_method (klass, "realize", rbclt_actor_realize, 0);
   rb_define_method (klass, "unrealize", rbclt_actor_unrealize, 0);
   rb_define_method (klass, "paint", rbclt_actor_paint, 0);
-  rb_define_method (klass, "pick", rbclt_actor_pick, 1);
   rb_define_method (klass, "queue_redraw", rbclt_actor_queue_redraw, 0);
   rb_define_method (klass, "queue_relayout", rbclt_actor_queue_relayout, 0);
   rb_define_method (klass, "destroy", rbclt_actor_destroy, 0);
@@ -675,8 +655,6 @@ rbclt_actor_init ()
   rb_define_method (klass, "allocate", rbclt_actor_allocate, 2);
   rb_define_method (klass, "allocate_preferred_size",
                     rbclt_actor_allocate_preferred_size, 1);
-  rb_define_method (klass, "allocation_coords",
-                    rbclt_actor_get_allocation_coords, 0);
   rb_define_method (klass, "allocation_box",
                     rbclt_actor_get_allocation_box, 0);
   rb_define_method (klass, "allocation_geometry",

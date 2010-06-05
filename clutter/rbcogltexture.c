@@ -62,59 +62,57 @@ rb_cogl_texture_get_format_bpp (CoglPixelFormat format)
   return bpp;
 }
 
-static gint
-rb_cogl_texture_max_waste_param (VALUE value)
-{
-  return NIL_P (value) ? 64 : NUM2INT (value);
-}
-
 static VALUE
-rb_cogl_texture_initialize (int argc, VALUE *argvin, VALUE self)
+rb_cogl_texture_initialize (int argc, VALUE *argv, VALUE self)
 {
-  VALUE argv[8];
   GError *error = NULL;
   CoglHandle tex = COGL_INVALID_HANDLE;
 
-  argc = rb_scan_args (argc, argvin, "17", argv, argv + 1, argv + 2,
-                       argv + 3, argv + 4, argv + 5, argv + 6, argv + 7);
-
-  if (argc <= 4)
-    tex = cogl_texture_new_from_file (StringValuePtr (argv[0]),
-                                      rb_cogl_texture_max_waste_param (argv[1]),
-                                      RTEST (argv[2]),
-                                      argv[3] == Qnil
-                                      ? COGL_PIXEL_FORMAT_ANY
-                                      : NUM2INT (argv[3]),
-                                      &error);
-  else if (argc == 5)
+  if (argc >= 2 && argc <= 4 && FIXNUM_P (argv[0]) && FIXNUM_P (argv[1]))
     tex = cogl_texture_new_with_size (NUM2UINT (argv[0]),
                                       NUM2UINT (argv[1]),
-                                      rb_cogl_texture_max_waste_param (argv[2]),
-                                      RTEST (argv[3]),
-                                      NUM2UINT (argv[4]));
-  else if (argc == 8)
+                                      NIL_P (argv[2])
+                                      ? COGL_TEXTURE_NONE
+                                      : RVAL2GFLAGS (argv[1],
+                                                     COGL_TYPE_TEXTURE_FLAGS),
+                                      NIL_P (argv[3])
+                                      ? COGL_PIXEL_FORMAT_ANY
+                                      : RVAL2GENUM (argv[2],
+                                                    COGL_TYPE_PIXEL_FORMAT));
+  else if (argc >= 1 && argc <= 3)
+    tex = cogl_texture_new_from_file (StringValuePtr (argv[0]),
+                                      NIL_P (argv[1])
+                                      ? COGL_TEXTURE_NONE
+                                      : RVAL2GFLAGS (argv[1],
+                                                     COGL_TYPE_TEXTURE_FLAGS),
+                                      NIL_P (argv[2])
+                                      ? COGL_PIXEL_FORMAT_ANY
+                                      : RVAL2GENUM (argv[2],
+                                                    COGL_TYPE_PIXEL_FORMAT),
+                                      &error);
+  else if (argc == 7)
     {
       guint width = NUM2UINT (argv[0]);
       guint height = NUM2UINT (argv[1]);
-      gint max_waste = rb_cogl_texture_max_waste_param (argv[2]);
-      guint rowstride;
-      const char *data = StringValuePtr (argv[7]);
+      CoglTextureFlags flags = RVAL2GFLAGS (argv[2], COGL_TYPE_TEXTURE_FLAGS);
+      CoglPixelFormat format = RVAL2GENUM (argv[3], COGL_TYPE_PIXEL_FORMAT);
+      CoglPixelFormat internal_format = RVAL2GENUM (argv[4],
+                                                    COGL_TYPE_PIXEL_FORMAT);
+      unsigned int rowstride;
+      const char *data = StringValuePtr (argv[6]);
 
       /* If there is no rowstride then try to guess what it will be
          from the format */
-      if (NIL_P (argv[6]) || (rowstride = NUM2UINT (argv[6])) == 0)
-        rowstride = width * rb_cogl_texture_get_format_bpp (NUM2UINT (argv[4]));
+      if (NIL_P (argv[5]) || (rowstride = NUM2UINT (argv[5])) == 0)
+        rowstride = width * rb_cogl_texture_get_format_bpp (format);
 
       /* Make sure the string is long enough */
-      if (RSTRING_LEN (argv[7]) < height * rowstride)
+      if (RSTRING_LEN (argv[6]) < height * rowstride)
         rb_raise (rb_eArgError, "data string too short");
 
-      tex = cogl_texture_new_from_data (width, height, max_waste,
-                                        RTEST (argv[3]),
-                                        NUM2UINT (argv[4]),
-                                        argv[5] == Qnil
-                                        ? COGL_PIXEL_FORMAT_ANY
-                                        : NUM2INT (argv[5]),
+      tex = cogl_texture_new_from_data (width, height,
+                                        flags, format,
+                                        internal_format,
                                         rowstride,
                                         (const guchar *) data);
     }
@@ -128,7 +126,7 @@ rb_cogl_texture_initialize (int argc, VALUE *argvin, VALUE self)
 
   G_INITIALIZE (self, tex);
 
-  cogl_texture_unref (tex);
+  cogl_handle_unref (tex);
 
   return Qnil;
 }
@@ -136,7 +134,7 @@ rb_cogl_texture_initialize (int argc, VALUE *argvin, VALUE self)
 CoglHandle
 rb_cogl_texture_get_handle (VALUE obj)
 {
-  return (CoglHandle) RVAL2BOXED (obj, CLUTTER_TYPE_TEXTURE_HANDLE);
+  return (CoglHandle) RVAL2BOXED (obj, COGL_TYPE_HANDLE);
 }
 
 static VALUE
@@ -180,66 +178,11 @@ rb_cogl_texture_get_max_waste (VALUE self)
 }
 
 static VALUE
-rb_cogl_texture_get_min_filter (VALUE self)
-{
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
-
-  return UINT2NUM (cogl_texture_get_min_filter (tex));
-}
-
-static VALUE
-rb_cogl_texture_get_mag_filter (VALUE self)
-{
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
-
-  return UINT2NUM (cogl_texture_get_mag_filter (tex));
-}
-
-static VALUE
 rb_cogl_texture_is_sliced (VALUE self)
 {
   CoglHandle tex = rb_cogl_texture_get_handle (self);
 
   return cogl_texture_is_sliced (tex) ? Qtrue : Qfalse;
-}
-
-static VALUE
-rb_cogl_texture_rectangle (int argc, VALUE *argv, VALUE self)
-{
-  VALUE x1in, y1in, x2in, y2in, tx1, ty1, tx2, ty2;
-  ClutterFixed x1, y1, x2, y2;
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
-
-  rb_scan_args (argc, argv, "26", &x1in, &y1in, &x2in, &y2in,
-                &tx1, &ty1, &tx2, &ty2);
-
-  x1 = rbclt_num_to_fixed (x1in);
-  y1 = rbclt_num_to_fixed (y1in);
-
-  if (x2in == Qnil)
-    x2 = CLUTTER_INT_TO_FIXED (cogl_texture_get_width (tex))
-      + x1;
-  else
-    x2 = rbclt_num_to_fixed (x2in);
-
-  if (y2in == Qnil)
-    y2 = CLUTTER_INT_TO_FIXED (cogl_texture_get_height (tex))
-      + y1;
-  else
-    y2 = rbclt_num_to_fixed (y2in);
-
-  cogl_texture_rectangle (tex,
-                          x1, y1, x2, y2,
-                          tx1 == Qnil
-                          ? 0 : rbclt_num_to_fixed (tx1),
-                          ty1 == Qnil
-                          ? 0 : rbclt_num_to_fixed (ty1),
-                          tx2 == Qnil
-                          ? CFX_ONE : rbclt_num_to_fixed (tx2),
-                          ty2 == Qnil
-                          ? CFX_ONE : rbclt_num_to_fixed (ty2));
-
-  return self;
 }
 
 static VALUE
@@ -265,39 +208,6 @@ rb_cogl_texture_get_data (int argc, VALUE *argv, VALUE self)
   RSTRING (data)->len = rowstride * cogl_texture_get_height (tex);
 
   return data;
-}
-
-static VALUE
-rb_cogl_texture_set_min_filter (VALUE self, VALUE min_filter)
-{
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
-
-  cogl_texture_set_filters (tex, NUM2UINT (min_filter),
-                            cogl_texture_get_mag_filter (tex));
-
-  return self;
-}
-
-static VALUE
-rb_cogl_texture_set_mag_filter (VALUE self, VALUE mag_filter)
-{
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
-
-  cogl_texture_set_filters (tex,
-                            cogl_texture_get_min_filter (tex),
-                            NUM2UINT (mag_filter));
-
-  return self;
-}
-
-static VALUE
-rb_cogl_texture_set_filters (VALUE self, VALUE min_filter, VALUE mag_filter)
-{
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
-
-  cogl_texture_set_filters (tex, NUM2UINT (min_filter), NUM2UINT (mag_filter));
-
-  return self;
 }
 
 static VALUE
@@ -335,84 +245,10 @@ rb_cogl_texture_set_region (VALUE self, VALUE src_x, VALUE src_y,
   return self;
 }
 
-static VALUE
-rb_cogl_texture_do_polygon (PolygonData *data)
-{
-  int i;
-  gboolean use_color = FALSE;
-
-  for (i = 0; i < data->argc; i++)
-    {
-      struct RArray *array;
-
-      Check_Type (data->argv[i], T_ARRAY);
-
-      array = RARRAY (data->argv[i]);
-
-      switch (array->len)
-        {
-        default:
-          rb_raise (rb_eArgError, "array too long in argument %i", i + 1);
-          break;
-
-        case 6:
-          data->vertices[i].color
-            = *(ClutterColor *) RVAL2BOXED (array->ptr[5], CLUTTER_TYPE_COLOR);
-          use_color = TRUE;
-        case 5:
-          data->vertices[i].ty
-            = rbclt_num_to_fixed (array->ptr[4]);
-        case 4:
-          data->vertices[i].tx
-            = rbclt_num_to_fixed (array->ptr[3]);
-        case 3:
-          data->vertices[i].z
-            = rbclt_num_to_fixed (array->ptr[2]);
-        case 2:
-          data->vertices[i].y
-            = rbclt_num_to_fixed (array->ptr[1]);
-        case 1:
-          data->vertices[i].x
-            = rbclt_num_to_fixed (array->ptr[0]);
-        case 0:
-          break;
-        }
-    }
-
-  cogl_texture_polygon (rb_cogl_texture_get_handle (data->self),
-                        data->argc, data->vertices, use_color);
-
-  return data->self;
-}
-
-static VALUE
-rb_cogl_texture_free_polygon_data (PolygonData *data)
-{
-  free (data->vertices);
-
-  return Qnil;
-}
-
-static VALUE
-rb_cogl_texture_polygon (int argc, VALUE *argv, VALUE self)
-{
-  PolygonData data;
-
-  data.argc = argc;
-  data.argv = argv;
-  data.self = self;
-  data.vertices = ALLOC_N (CoglTextureVertex, argc);
-
-  return rb_ensure (rb_cogl_texture_do_polygon,
-                    (VALUE) &data,
-                    rb_cogl_texture_free_polygon_data,
-                    (VALUE) &data);
-}
-
 void
 rb_cogl_texture_init ()
 {
-  VALUE klass = G_DEF_CLASS (CLUTTER_TYPE_TEXTURE_HANDLE, "Texture",
+  VALUE klass = G_DEF_CLASS (COGL_TYPE_HANDLE, "Texture",
                              rbclt_c_cogl);
   rb_c_cogl_texture = klass;
 
@@ -420,27 +256,16 @@ rb_cogl_texture_init ()
                                                    rb_eStandardError);
 
   rb_define_method (klass, "initialize", rb_cogl_texture_initialize, -1);
-  rb_define_method (klass, "rectangle", rb_cogl_texture_rectangle, -1);
   rb_define_method (klass, "width", rb_cogl_texture_get_width, 0);
   rb_define_method (klass, "height", rb_cogl_texture_get_height, 0);
   rb_define_method (klass, "format", rb_cogl_texture_get_format, 0);
   rb_define_method (klass, "rowstride", rb_cogl_texture_get_rowstride, 0);
   rb_define_method (klass, "max_waste", rb_cogl_texture_get_max_waste, 0);
-  rb_define_method (klass, "min_filter", rb_cogl_texture_get_min_filter, 0);
-  rb_define_method (klass, "mag_filter", rb_cogl_texture_get_mag_filter, 0);
   rb_define_method (klass, "sliced?", rb_cogl_texture_is_sliced, 0);
   rb_define_method (klass, "get_data", rb_cogl_texture_get_data, -1);
   rb_define_alias (klass, "data", "get_data");
-  rb_define_method (klass, "set_min_filter",
-                    rb_cogl_texture_set_min_filter, 1);
-  rb_define_method (klass, "set_mag_filter",
-                    rb_cogl_texture_set_mag_filter, 1);
-  rb_define_method (klass, "set_filters",
-                    rb_cogl_texture_set_filters, 2);
   rb_define_method (klass, "set_region",
                     rb_cogl_texture_set_region, 11);
-  rb_define_method (klass, "polygon",
-                    rb_cogl_texture_polygon, -1);
 
   G_DEF_SETTERS (klass);
 }

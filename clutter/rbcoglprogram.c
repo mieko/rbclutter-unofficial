@@ -97,7 +97,7 @@ static VALUE
 rb_cogl_program_get_uniform_location (VALUE self, VALUE uniform_name)
 {
   CoglHandle program = rb_cogl_program_get_handle (self);
-  COGLint location;
+  int location;
 
   location = cogl_program_get_uniform_location (program,
                                                 StringValuePtr (uniform_name));

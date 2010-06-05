@@ -82,27 +82,24 @@ rbclt_event_put (VALUE self)
 }
 
 static VALUE
-rbclt_key_event_symbol (VALUE self)
+rbclt_event_get_key_symbol (VALUE self)
 {
-  ClutterKeyEvent *key_event
-    = (ClutterKeyEvent *) RVAL2BOXED (self, CLUTTER_TYPE_EVENT);
-  return INT2NUM (clutter_key_event_symbol (key_event));
+  ClutterEvent *event = RVAL2BOXED (self, CLUTTER_TYPE_EVENT);
+  return INT2NUM (clutter_event_get_key_symbol (event));
 }
 
 static VALUE
-rbclt_key_event_code (VALUE self)
+rbclt_event_get_key_code (VALUE self)
 {
-  ClutterKeyEvent *key_event
-    = (ClutterKeyEvent *) RVAL2BOXED (self, CLUTTER_TYPE_EVENT);
-  return UINT2NUM (clutter_key_event_code (key_event));
+  ClutterEvent *event = RVAL2BOXED (self, CLUTTER_TYPE_EVENT);
+  return UINT2NUM (clutter_event_get_key_code (event));
 }
 
 static VALUE
-rbclt_key_event_unicode (VALUE self)
+rbclt_event_get_key_unicode (VALUE self)
 {
-  ClutterKeyEvent *key_event
-    = (ClutterKeyEvent *) RVAL2BOXED (self, CLUTTER_TYPE_EVENT);
-  return UINT2NUM (clutter_key_event_unicode (key_event));
+  ClutterEvent *event = RVAL2BOXED (self, CLUTTER_TYPE_EVENT);
+  return UINT2NUM (clutter_event_get_key_unicode (event));
 }
 
 static VALUE
@@ -139,10 +136,12 @@ rbclt_event_init ()
   G_DEF_CLASS (CLUTTER_TYPE_EVENT_FLAGS, "Flag", rbclt_event_class);
   G_DEF_CONSTANTS (rbclt_event_class, CLUTTER_TYPE_EVENT_FLAGS, "CLUTTER_");
 
-  rb_define_method (rbclt_key_event_class, "symbol", rbclt_key_event_symbol, 0);
-  rb_define_method (rbclt_key_event_class, "code", rbclt_key_event_code, 0);
-  rb_define_method (rbclt_key_event_class, "unicode",
-                    rbclt_key_event_unicode, 0);
+  rb_define_method (rbclt_key_event_class, "key_symbol",
+                    rbclt_event_get_key_symbol, 0);
+  rb_define_method (rbclt_key_event_class, "key_code",
+                    rbclt_event_get_key_code, 0);
+  rb_define_method (rbclt_key_event_class, "key_unicode",
+                    rbclt_event_get_key_unicode, 0);
 
   rb_define_singleton_method (rbclt_c_clutter, "keysym_to_unicode",
                               rbclt_event_keysym_to_unicode, 1);

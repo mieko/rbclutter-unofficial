@@ -19,8 +19,7 @@
 
 #include <clutter/clutter.h>
 
-/* MAKE_BOXED(ClutterFog density:ClutterFixed
-              z_near:ClutterFixed z_far:ClutterFixed) */
+/* MAKE_BOXED(ClutterFog z_near:gfloat z_far:gfloat) */
 
 void
 rbclt_fog_init ()

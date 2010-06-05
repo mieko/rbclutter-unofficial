@@ -38,33 +38,6 @@ rbclt_media_filename_equals (VALUE self, VALUE filename)
   return filename;
 }
 
-static VALUE
-rbclt_media_set_position (int argc, VALUE *argv, VALUE self)
-{
-  ClutterMedia *media = CLUTTER_MEDIA (RVAL2GOBJ (self));
-  VALUE pos, y;
-
-  /* The 'set_position' setter for the 'position' property overrides
-     the 'set_position(x,y)' method in Clutter::Actor, so to work
-     around this we will fake a special set_position method, but only
-     if the object is actually a ClutterActor */
-  if (CLUTTER_IS_ACTOR (media))
-    rb_scan_args (argc, argv, "11", &pos, &y);
-  else
-    {
-      rb_scan_args (argc, argv, "10", &pos);
-      y = Qnil;
-    }
-
-  if (y != Qnil)
-    clutter_actor_set_position (CLUTTER_ACTOR (media),
-                                NUM2INT (pos), NUM2INT (y));
-  else
-    clutter_media_set_position (media, NUM2INT (pos));
-
-  return self;
-}
-
 void
 rbclt_media_init ()
 {
@@ -72,7 +45,6 @@ rbclt_media_init ()
 
   rb_define_method (klass, "set_filename", rbclt_media_set_filename, 1);
   rb_define_method (klass, "filename=", rbclt_media_filename_equals, 1);
-  rb_define_method (klass, "set_position", rbclt_media_set_position, -1);
 
   /* All of the other methods are properties so they will get defined
      automatically */

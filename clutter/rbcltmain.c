@@ -104,20 +104,6 @@ rbclt_get_motion_events_enabled (VALUE self)
 }
 
 static VALUE
-rbclt_set_motion_events_frequency (VALUE self, VALUE val)
-{
-  clutter_set_motion_events_frequency (NUM2UINT (val));
-
-  return Qnil;
-}
-
-static VALUE
-rbclt_get_motion_events_frequency (VALUE self)
-{
-  return UINT2NUM (clutter_get_motion_events_frequency ());
-}
-
-static VALUE
 rbclt_set_default_frame_rate (VALUE self, VALUE val)
 {
   clutter_set_default_frame_rate (NUM2UINT (val));
@@ -181,20 +167,6 @@ rbclt_clear_glyph_cache (VALUE self)
   clutter_clear_glyph_cache ();
 
   return Qnil;
-}
-
-static VALUE
-rbclt_set_use_mipmapped_text (VALUE self, VALUE val)
-{
-  clutter_set_use_mipmapped_text (RTEST (val));
-
-  return Qnil;
-}
-
-static VALUE
-rbclt_get_use_mipmapped_text (VALUE self)
-{
-  return clutter_get_use_mipmapped_text () ? Qtrue : Qfalse;
 }
 
 static VALUE
@@ -289,10 +261,10 @@ rbclt_main_init ()
 
   rb_define_module_function (rbclt_c_clutter, "init", rbclt_init, -1);
 
+  rb_define_const (rbclt_c_clutter, "PRIORITY_EVENTS",
+                   INT2NUM (CLUTTER_PRIORITY_EVENTS));
   rb_define_const (rbclt_c_clutter, "PRIORITY_REDRAW",
                    INT2NUM (CLUTTER_PRIORITY_REDRAW));
-  rb_define_const (rbclt_c_clutter, "PRIORITY_TIMELINE",
-                   INT2NUM (CLUTTER_PRIORITY_TIMELINE));
 
   rb_define_module_function (rbclt_c_clutter, "debug_enabled?",
                              rbclt_get_debug_enabled, 0);
@@ -311,10 +283,6 @@ rbclt_main_init ()
                              rbclt_set_motion_events_enabled, 1);
   rb_define_module_function (rbclt_c_clutter, "motion_events_enabled?",
                              rbclt_get_motion_events_enabled, 0);
-  rb_define_module_function (rbclt_c_clutter, "set_motion_events_frequency",
-                             rbclt_set_motion_events_frequency, 1);
-  rb_define_module_function (rbclt_c_clutter, "motion_events_frequency",
-                             rbclt_get_motion_events_frequency, 0);
   rb_define_module_function (rbclt_c_clutter, "set_default_frame_rate",
                              rbclt_set_default_frame_rate, 1);
   rb_define_module_function (rbclt_c_clutter, "default_frame_rate",
@@ -333,10 +301,6 @@ rbclt_main_init ()
                              rbclt_get_keyboard_grab, 0);
   rb_define_module_function (rbclt_c_clutter, "clear_glyph_cache",
                              rbclt_clear_glyph_cache, 0);
-  rb_define_module_function (rbclt_c_clutter, "set_use_mipmapped_text",
-                             rbclt_set_use_mipmapped_text, 1);
-  rb_define_module_function (rbclt_c_clutter, "use_mipmapped_text?",
-                             rbclt_get_use_mipmapped_text, 0);
 
   klass = rb_define_module_under (rbclt_c_clutter, "Threads");
 

@@ -23,15 +23,11 @@
 #include "rbclutter.h"
 
 static VALUE
-rbclt_timeline_initialize (int argc, VALUE *argv, VALUE self)
+rbclt_timeline_initialize (VALUE self, VALUE msecs)
 {
   ClutterTimeline *tl;
-  VALUE n_frame, fps;
 
-  if (rb_scan_args (argc, argv, "11", &n_frame, &fps) == 2)
-    tl = clutter_timeline_new (NUM2UINT (n_frame), NUM2UINT (fps));
-  else
-    tl = clutter_timeline_new_for_duration (NUM2UINT (n_frame));
+  tl = clutter_timeline_new (NUM2UINT (msecs));
 
   G_INITIALIZE (self, tl);
 
@@ -94,29 +90,10 @@ rbclt_timeline_advance (VALUE self, VALUE frame_num)
 }
 
 static VALUE
-rbclt_timeline_current_frame (VALUE self)
-{
-  ClutterTimeline *timeline = CLUTTER_TIMELINE (RVAL2GOBJ (self));
-  return INT2NUM (clutter_timeline_get_current_frame (timeline));
-}
-
-static VALUE
 rbclt_timeline_is_playing (VALUE self)
 {
   ClutterTimeline *timeline = CLUTTER_TIMELINE (RVAL2GOBJ (self));
   return clutter_timeline_is_playing (timeline) ? Qtrue : Qfalse;
-}
-
-static VALUE
-rbclt_timeline_add_marker_at_frame (VALUE self, VALUE marker_name,
-                                    VALUE frame_num)
-{
-  ClutterTimeline *timeline = CLUTTER_TIMELINE (RVAL2GOBJ (self));
-
-  clutter_timeline_add_marker_at_frame (timeline, StringValuePtr (marker_name),
-                                        NUM2UINT (frame_num));
-
-  return self;
 }
 
 static VALUE
@@ -191,18 +168,7 @@ rbclt_timeline_get_delta (VALUE self)
 {
   ClutterTimeline *timeline = CLUTTER_TIMELINE (RVAL2GOBJ (self));
 
-  return UINT2NUM (clutter_timeline_get_delta (timeline, NULL));
-}
-
-static VALUE
-rbclt_timeline_get_delta_msecs (VALUE self)
-{
-  ClutterTimeline *timeline = CLUTTER_TIMELINE (RVAL2GOBJ (self));
-  guint msecs;
-
-  clutter_timeline_get_delta (timeline, &msecs);
-
-  return UINT2NUM (msecs);
+  return UINT2NUM (clutter_timeline_get_delta (timeline));
 }
 
 void
@@ -213,19 +179,13 @@ rbclt_timeline_init ()
 
   rb_define_method (klass, "initialize", rbclt_timeline_initialize, -1);
   rb_define_method (klass, "dup", rbclt_timeline_dup, 0);
-  rb_define_alias (klass, "speed", "fps");
-  rb_define_alias (klass, "speed=", "fps=");
-  rb_define_alias (klass, "set_speed", "set_fps");
   rb_define_method (klass, "start", rbclt_timeline_start, 0);
   rb_define_method (klass, "pause", rbclt_timeline_pause, 0);
   rb_define_method (klass, "stop", rbclt_timeline_stop, 0);
   rb_define_method (klass, "rewind", rbclt_timeline_rewind, 0);
   rb_define_method (klass, "skip", rbclt_timeline_skip, 1);
   rb_define_method (klass, "advance", rbclt_timeline_advance, 1);
-  rb_define_method (klass, "current_frame", rbclt_timeline_current_frame, 0);
   rb_define_method (klass, "playing?", rbclt_timeline_is_playing, 0);
-  rb_define_method (klass, "add_marker_at_frame",
-                    rbclt_timeline_add_marker_at_frame, 2);
   rb_define_method (klass, "add_marker_at_time",
                     rbclt_timeline_add_marker_at_time, 2);
   rb_define_method (klass, "remove_marker", rbclt_timeline_remove_marker, 1);
@@ -235,8 +195,6 @@ rbclt_timeline_init ()
   rb_define_method (klass, "advance_to_marker",
                     rbclt_timeline_advance_to_marker, 1);
   rb_define_method (klass, "delta", rbclt_timeline_get_delta, 0);
-  rb_define_method (klass, "delta_msecs",
-                    rbclt_timeline_get_delta_msecs, 0);
 
   G_DEF_CONSTANTS (klass, CLUTTER_TYPE_TIMELINE_DIRECTION, "CLUTTER_TIMELINE_");
   G_DEF_CLASS (CLUTTER_TYPE_TIMELINE_DIRECTION, "Direction", klass);

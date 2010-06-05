@@ -48,9 +48,9 @@ rbclt_behaviour_rotate_get_center (VALUE self)
   ClutterVertex vertex;
   int x, y, z;
   clutter_behaviour_rotate_get_center (brotate, &x, &y, &z);
-  vertex.x = CLUTTER_UNITS_FROM_INT (x);
-  vertex.y = CLUTTER_UNITS_FROM_INT (y);
-  vertex.z = CLUTTER_UNITS_FROM_INT (z);
+  vertex.x = x;
+  vertex.y = y;
+  vertex.z = z;
   return BOXED2RVAL (&vertex, CLUTTER_TYPE_VERTEX);
 }
 
@@ -66,9 +66,9 @@ rbclt_behaviour_rotate_set_center (int argc, VALUE *argv, VALUE self)
         = (ClutterVertex *) RVAL2BOXED (x, CLUTTER_TYPE_VERTEX);
 
       clutter_behaviour_rotate_set_center (brotate,
-                                           CLUTTER_UNITS_TO_INT (vertex->x),
-                                           CLUTTER_UNITS_TO_INT (vertex->y),
-                                           CLUTTER_UNITS_TO_INT (vertex->z));
+                                           vertex->x,
+                                           vertex->y,
+                                           vertex->z);
     }
   else
     clutter_behaviour_rotate_set_center (brotate,
@@ -87,9 +87,9 @@ rbclt_behaviour_rotate_center_equals (VALUE self, VALUE center)
     = (ClutterVertex *) RVAL2BOXED (center, CLUTTER_TYPE_VERTEX);
 
   clutter_behaviour_rotate_set_center (brotate,
-                                       CLUTTER_UNITS_TO_INT (vertex->x),
-                                       CLUTTER_UNITS_TO_INT (vertex->y),
-                                       CLUTTER_UNITS_TO_INT (vertex->z));
+                                       vertex->x,
+                                       vertex->y,
+                                       vertex->z);
   return center;
 }
 

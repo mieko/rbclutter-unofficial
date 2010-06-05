@@ -46,22 +46,6 @@ rbclt_stage_get_default ()
 }
 
 static VALUE
-rbclt_stage_fullscreen (VALUE self)
-{
-  ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
-  clutter_stage_fullscreen (stage);
-  return self;
-}
-
-static VALUE
-rbclt_stage_unfullscreen (VALUE self)
-{
-  ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
-  clutter_stage_unfullscreen (stage);
-  return self;
-}
-
-static VALUE
 rbclt_stage_show_cursor (VALUE self)
 {
   ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
@@ -78,10 +62,14 @@ rbclt_stage_hide_cursor (VALUE self)
 }
 
 static VALUE
-rbclt_stage_get_actor_at_pos (VALUE self, VALUE x, VALUE y)
+rbclt_stage_get_actor_at_pos (VALUE self, VALUE pick_mode, VALUE x, VALUE y)
 {
   ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
-  return GOBJ2RVAL (clutter_stage_get_actor_at_pos (stage, NUM2INT (x),
+  ClutterPickMode pick_mode_value = RVAL2GENUM (pick_mode,
+                                                CLUTTER_TYPE_PICK_MODE);
+  return GOBJ2RVAL (clutter_stage_get_actor_at_pos (stage,
+                                                    pick_mode_value,
+                                                    NUM2INT (x),
                                                     NUM2INT (y)));
 }
 
@@ -93,26 +81,6 @@ rbclt_stage_event (VALUE self, VALUE event_arg)
                                                      CLUTTER_TYPE_EVENT);
 
   clutter_stage_event (stage, event);
-
-  return self;
-}
-
-static VALUE
-rbclt_stage_set_perspective (int argc, VALUE *argv, VALUE self)
-{
-  ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
-
-  if (argc == 1)
-    {
-      ClutterPerspective *persp
-        = (ClutterPerspective *) RVAL2BOXED (argv[0], CLUTTER_TYPE_PERSPECTIVE);
-      clutter_stage_set_perspectivex (stage, persp);
-    }
-  else if (argc == 4)
-    clutter_stage_set_perspective (stage, NUM2DBL (argv[0]), NUM2DBL (argv[1]),
-                                   NUM2DBL (argv[2]), NUM2DBL (argv[3]));
-  else
-    rb_raise (rb_eArgError, "wrong number of arguments (%d for 1 or 4)", argc);
 
   return self;
 }
@@ -142,59 +110,6 @@ rbclt_stage_read_pixels (VALUE self, VALUE x, VALUE y,
     }
 
   return ret;
-}
-
-static VALUE
-rbclt_stage_get_fog (VALUE self)
-{
-  ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
-  ClutterFog fog;
-
-  clutter_stage_get_fogx (stage, &fog);
-
-  return BOXED2RVAL (&fog, CLUTTER_TYPE_FOG);
-}
-
-static VALUE
-rbclt_stage_set_fog (int argc, VALUE *argv, VALUE self)
-{
-  ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
-
-  if (argc == 1)
-    {
-      ClutterFog *fog = (ClutterFog *) RVAL2BOXED (argv[0], CLUTTER_TYPE_FOG);
-      clutter_stage_set_fogx (stage, fog);
-    }
-  else
-    {
-      VALUE density, z_near, z_far;
-
-      rb_scan_args (argc, argv, "03", &density, &z_near, &z_far);
-
-      clutter_stage_set_fog (stage, NUM2DBL (density),
-                             NUM2DBL (z_near), NUM2DBL (z_far));
-    }
-
-  return self;
-}
-
-static VALUE
-rbclt_stage_fog_equals (VALUE self, VALUE fog_arg)
-{
-  ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
-  ClutterFog *fog = (ClutterFog *) RVAL2BOXED (fog_arg, CLUTTER_TYPE_FOG);
-
-  clutter_stage_set_fogx (stage, fog);
-
-  return fog_arg;
-}
-
-static VALUE
-rbclt_stage_get_resolution (VALUE self)
-{
-  ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
-
-  return rb_float_new (clutter_stage_get_resolution (stage));
 }
 
 static VALUE
@@ -241,18 +156,11 @@ rbclt_stage_init ()
   rb_define_singleton_method (klass, "get_default", rbclt_stage_get_default, 0);
 
   rb_define_method (klass, "initialize", rbclt_stage_initialize, 0);
-  rb_define_method (klass, "fullscreen", rbclt_stage_fullscreen, 0);
-  rb_define_method (klass, "unfullscreen", rbclt_stage_unfullscreen, 0);
   rb_define_method (klass, "show_cursor", rbclt_stage_show_cursor, 0);
   rb_define_method (klass, "hide_cursor", rbclt_stage_hide_cursor, 0);
-  rb_define_method (klass, "get_actor_at_pos", rbclt_stage_get_actor_at_pos, 2);
+  rb_define_method (klass, "get_actor_at_pos", rbclt_stage_get_actor_at_pos, 3);
   rb_define_method (klass, "event", rbclt_stage_event, 1);
-  rb_define_method (klass, "set_perspective", rbclt_stage_set_perspective, -1);
   rb_define_method (klass, "read_pixels", rbclt_stage_read_pixels, 4);
-  rb_define_method (klass, "fog", rbclt_stage_get_fog, 0);
-  rb_define_method (klass, "set_fog", rbclt_stage_set_fog, -1);
-  rb_define_method (klass, "fog=", rbclt_stage_fog_equals, 1);
-  rb_define_method (klass, "resolution", rbclt_stage_get_resolution, 0);
   rb_define_method (klass, "set_key_focus", rbclt_stage_set_key_focus, 1);
   rb_define_method (klass, "key_focus", rbclt_stage_get_key_focus, 0);
   rb_define_method (klass, "ensure_current", rbclt_stage_ensure_current, 0);

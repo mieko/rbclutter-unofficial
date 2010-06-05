@@ -19,7 +19,7 @@
 
 #include <clutter/clutter.h>
 
-/* MAKE_BOXED(ClutterVertex x:ClutterUnit y:ClutterUnit z:ClutterUnit) */
+/* MAKE_BOXED(ClutterVertex x:gfloat y:gfloat z:gfloat) */
 
 #include "rbclutter.h"
 

@@ -30,7 +30,7 @@ static void
 rb_cogl_offscreen_free (void *ptr)
 {
   if (ptr)
-    cogl_offscreen_unref (ptr);
+    cogl_handle_unref (ptr);
 }
 
 static VALUE
@@ -40,79 +40,17 @@ rb_cogl_offscreen_allocate (VALUE klass)
 }
 
 static VALUE
-rb_cogl_offscreen_initialize (int argc, VALUE *argv, VALUE self)
+rb_cogl_offscreen_initialize (VALUE self, VALUE tex)
 {
-  VALUE tex;
   CoglHandle offscreen;
+  CoglHandle tex_handle = rb_cogl_texture_get_handle (tex);
 
-  rb_scan_args (argc, argv, "01", &tex);
-
-  if (NIL_P (tex))
-    offscreen = cogl_offscreen_new_multisample ();
-  else
-    {
-      CoglHandle tex_handle = rb_cogl_texture_get_handle (tex);
-      offscreen = cogl_offscreen_new_to_texture (tex_handle);
-    }
+  offscreen = cogl_offscreen_new_to_texture (tex_handle);
 
   if (offscreen == COGL_INVALID_HANDLE)
     rb_raise (rb_c_cogl_offscreen_error, "failed to create offscreen object");
 
   DATA_PTR (self) = offscreen;
-
-  return Qnil;
-}
-
-static CoglHandle
-rb_cogl_offscreen_get_handle (VALUE obj)
-{
-  void *ptr;
-
-  if (!RTEST (rb_obj_is_kind_of (obj, rb_c_cogl_offscreen)))
-    rb_raise (rb_eTypeError, "not a Cogl offscreen");
-
-  Data_Get_Struct (obj, void, ptr);
-
-  return (CoglHandle) ptr;
-}
-
-static VALUE
-rb_cogl_offscreen_blit (int argc, VALUE *argv, VALUE self)
-{
-  if (argc == 1)
-    cogl_offscreen_blit (rb_cogl_offscreen_get_handle (self),
-                         rb_cogl_offscreen_get_handle (argv[0]));
-  else
-    {
-      VALUE dst_buffer, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h;
-
-      rb_scan_args (argc, argv, "72",
-                    &dst_buffer, &src_x, &src_y, &src_w, &src_h,
-                    &dst_x, &dst_y, &dst_w, &dst_h);
-
-      cogl_offscreen_blit_region (rb_cogl_offscreen_get_handle (self),
-                                  rb_cogl_offscreen_get_handle (dst_buffer),
-                                  NUM2INT (src_x), NUM2INT (src_y),
-                                  NUM2INT (src_w), NUM2INT (src_h),
-                                  NUM2INT (dst_x), NUM2INT (dst_y),
-                                  NUM2INT (NIL_P (dst_w) ? src_w : dst_w),
-                                  NUM2INT (NIL_P (dst_h) ? src_h : dst_h));
-    }
-
-  return self;
-}
-
-static VALUE
-rb_cogl_draw_buffer (int argc, VALUE *argv, VALUE self)
-{
-  VALUE target, offscreen;
-
-  rb_scan_args (argc, argv, "11", &target, &offscreen);
-
-  cogl_draw_buffer (NUM2UINT (target),
-                    NIL_P (offscreen)
-                    ? COGL_INVALID_HANDLE
-                    : rb_cogl_offscreen_get_handle (offscreen));
 
   return Qnil;
 }
@@ -130,7 +68,4 @@ rb_cogl_offscreen_init ()
   rb_define_alloc_func (klass, rb_cogl_offscreen_allocate);
 
   rb_define_method (klass, "initialize", rb_cogl_offscreen_initialize, -1);
-  rb_define_method (klass, "blit", rb_cogl_offscreen_blit, -1);
-  rb_define_singleton_method (rbclt_c_cogl, "draw_buffer",
-                              rb_cogl_draw_buffer, -1);
 }

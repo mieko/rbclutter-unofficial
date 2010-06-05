@@ -1,5 +1,5 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
- * Copyright (C) 2007  Neil Roberts
+ * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,27 +17,9 @@
  * MA  02110-1301  USA
  */
 
-#include <rbgobject.h>
-#include <clutter/clutter.h>
+#ifndef _RBCLT_PATH_H
+#define _RBCLT_PATH_H
 
-#include "rbclutter.h"
+extern VALUE rbclt_c_path;
 
-static VALUE
-rbclt_clone_texture_initialize (VALUE self, VALUE other)
-{
-  ClutterActor *actor;
-
-  actor = clutter_clone_texture_new (RVAL2GOBJ (other));
-
-  rbclt_initialize_unowned (self, actor);
-
-  return Qnil;
-}
-
-void
-rbclt_clone_texture_init ()
-{
-  VALUE klass = G_DEF_CLASS (CLUTTER_TYPE_CLONE_TEXTURE, "CloneTexture", rbclt_c_clutter);
-
-  rb_define_method (klass, "initialize", rbclt_clone_texture_initialize, 1);
-}
+#endif /* _RBCLT_PATH_H */

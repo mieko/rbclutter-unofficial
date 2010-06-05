@@ -69,34 +69,20 @@ static VALUE
 rb_cogl_perspective (VALUE self, VALUE fovy, VALUE aspect,
                      VALUE z_near, VALUE z_far)
 {
-  cogl_perspective (rbclt_num_to_fixed (fovy),
-                    rbclt_num_to_fixed (aspect),
-                    rbclt_num_to_fixed (z_near),
-                    rbclt_num_to_fixed (z_far));
+  cogl_perspective (NUM2DBL (fovy),
+                    NUM2DBL (aspect),
+                    NUM2DBL (z_near),
+                    NUM2DBL (z_far));
 
   return Qnil;
 }
 
 static VALUE
-rb_cogl_setup_viewport (VALUE self,
-                        VALUE width, VALUE height,
-                        VALUE fovy, VALUE aspect,
-                        VALUE z_near, VALUE z_far)
+rb_cogl_scale (VALUE self, VALUE x, VALUE y, VALUE z)
 {
-  cogl_setup_viewport (NUM2UINT (width), NUM2UINT (height),
-                       rbclt_num_to_fixed (fovy),
-                       rbclt_num_to_fixed (aspect),
-                       rbclt_num_to_fixed (z_near),
-                       rbclt_num_to_fixed (z_far));
-
-  return Qnil;
-}
-
-static VALUE
-rb_cogl_scale (VALUE self, VALUE x, VALUE y)
-{
-  cogl_scale (rbclt_num_to_fixed (x),
-              rbclt_num_to_fixed (y));
+  cogl_scale (NUM2DBL (x),
+              NUM2DBL (y),
+              NUM2DBL (z));
 
   return Qnil;
 }
@@ -104,9 +90,9 @@ rb_cogl_scale (VALUE self, VALUE x, VALUE y)
 static VALUE
 rb_cogl_translate (VALUE self, VALUE x, VALUE y, VALUE z)
 {
-  cogl_translatex (rbclt_num_to_fixed (x),
-                   rbclt_num_to_fixed (y),
-                   rbclt_num_to_fixed (z));
+  cogl_translate (NUM2DBL (x),
+                  NUM2DBL (y),
+                  NUM2DBL (z));
 
   return Qnil;
 }
@@ -114,99 +100,44 @@ rb_cogl_translate (VALUE self, VALUE x, VALUE y, VALUE z)
 static VALUE
 rb_cogl_rotate (VALUE self, VALUE angle, VALUE x, VALUE y, VALUE z)
 {
-  cogl_rotatex (rbclt_num_to_fixed (angle),
-                NUM2INT (x), NUM2INT (y), NUM2INT (z));
+  cogl_rotate (NUM2DBL (angle),
+               NUM2INT (x), NUM2INT (y), NUM2INT (z));
 
   return Qnil;
-}
-
-static VALUE
-rb_cogl_convert_matrix (const ClutterFixed mfixed[16])
-{
-  VALUE mfloat[16], *dst = mfloat + 16;
-  const ClutterFixed *src;
-
-  for (src = mfixed + 16; src > mfixed;)
-    *(--dst) = rb_float_new (CLUTTER_FIXED_TO_FLOAT (*(--src)));
-
-  return rb_ary_new4 (16, mfloat);
 }
 
 static VALUE
 rb_cogl_get_projection_matrix (VALUE self)
 {
-  ClutterFixed mfixed[16];
-
-  cogl_get_projection_matrix (mfixed);
-
-  return rb_cogl_convert_matrix (mfixed);
+  /* TODO */
+  return Qnil;
 }
 
 static VALUE
 rb_cogl_get_modelview_matrix (VALUE self)
 {
-  ClutterFixed mfixed[16];
-
-  cogl_get_modelview_matrix (mfixed);
-
-  return rb_cogl_convert_matrix (mfixed);
+  /* TODO */
+  return Qnil;
 }
 
 static VALUE
 rb_cogl_get_viewport (VALUE self)
 {
-  ClutterFixed vfixed[4], *src;
-  VALUE vfloat[4], *dst = vfloat + 4;
+  gfloat vfloat[4], *src;
+  VALUE vvalue[4], *dst = vvalue + 4;
 
-  cogl_get_viewport (vfixed);
+  cogl_get_viewport (vfloat);
 
-  for (src = vfixed + 4; src > vfixed;)
-    *(--dst) = rb_float_new (CLUTTER_FIXED_TO_FLOAT (*(--src)));
+  for (src = vfloat + 4; src > vfloat;)
+    *(--dst) = rb_float_new (*(--src));
 
-  return rb_ary_new4 (4, vfloat);
+  return rb_ary_new4 (4, vvalue);
 }
 
 static VALUE
-rb_cogl_clip_set (VALUE self, VALUE x_offset, VALUE y_offset,
-                  VALUE width, VALUE height)
+rb_cogl_set_depth_test_enabled (VALUE self, VALUE v)
 {
-  cogl_clip_set (rbclt_num_to_fixed (x_offset),
-                 rbclt_num_to_fixed (y_offset),
-                 rbclt_num_to_fixed (width),
-                 rbclt_num_to_fixed (height));
-
-  return Qnil;
-}
-
-static VALUE
-rb_cogl_clip_unset (VALUE self)
-{
-  cogl_clip_unset ();
-
-  return Qnil;
-}
-
-static VALUE
-rb_cogl_enable_depth_test (VALUE self, VALUE v)
-{
-  cogl_enable_depth_test (RTEST (v));
-
-  return Qnil;
-}
-
-static VALUE
-rb_cogl_alpha_func (VALUE self, VALUE func, VALUE ref)
-{
-  cogl_alpha_func (NUM2INT (func),
-                   rbclt_num_to_fixed (ref));
-
-  return Qnil;
-}
-
-static VALUE
-rb_cogl_paint_init (VALUE self, VALUE color)
-{
-  cogl_paint_init ((ClutterColor *) RVAL2BOXED (color, CLUTTER_TYPE_COLOR));
+  cogl_set_depth_test_enabled (RTEST (v));
 
   return Qnil;
 }
@@ -228,10 +159,8 @@ rb_cogl_init ()
                               rb_cogl_pop_matrix, 0);
   rb_define_singleton_method (rbclt_c_cogl, "perspective",
                               rb_cogl_perspective, 4);
-  rb_define_singleton_method (rbclt_c_cogl, "setup_viewport",
-                              rb_cogl_setup_viewport, 6);
   rb_define_singleton_method (rbclt_c_cogl, "scale",
-                              rb_cogl_scale, 2);
+                              rb_cogl_scale, 3);
   rb_define_singleton_method (rbclt_c_cogl, "translate",
                               rb_cogl_translate, 3);
   rb_define_singleton_method (rbclt_c_cogl, "rotate",
@@ -242,16 +171,6 @@ rb_cogl_init ()
                               rb_cogl_get_modelview_matrix, 0);
   rb_define_singleton_method (rbclt_c_cogl, "get_viewport",
                               rb_cogl_get_viewport, 0);
-  rb_define_singleton_method (rbclt_c_cogl, "clip_set",
-                              rb_cogl_clip_set, 4);
-  rb_define_singleton_method (rbclt_c_cogl, "clip_unset",
-                              rb_cogl_clip_unset, 0);
-  rb_define_singleton_method (rbclt_c_cogl, "enable_depth_test",
-                              rb_cogl_enable_depth_test, 1);
-  rb_define_singleton_method (rbclt_c_cogl, "alpha_func",
-                              rb_cogl_alpha_func, 2);
-  rb_define_singleton_method (rbclt_c_cogl, "paint_init",
-                              rb_cogl_paint_init, 1);
-
-  rb_cogl_consts_init ();
+  rb_define_singleton_method (rbclt_c_cogl, "set_depth_test_enabled",
+                              rb_cogl_set_depth_test_enabled, 1);
 }

@@ -19,8 +19,8 @@
 
 #include <clutter/clutter.h>
 
-/* MAKE_BOXED(ClutterPerspective fovy:ClutterFixed aspect:ClutterFixed
-   z_near:ClutterFixed z_far:ClutterFixed) */
+/* MAKE_BOXED(ClutterPerspective fovy:gfloat aspect:gfloat
+   z_near:gfloat z_far:gfloat) */
 
 void
 rbclt_perspective_init ()

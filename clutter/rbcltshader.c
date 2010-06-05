@@ -58,10 +58,10 @@ static VALUE
 rbclt_shader_set_uniform (VALUE self, VALUE name, VALUE value)
 {
   ClutterShader *shader = CLUTTER_SHADER (RVAL2GOBJ (self));
-  /* This could potentially overload to call other variants of
-     set_uniform if there were any */
-  clutter_shader_set_uniform_1f (shader, StringValuePtr (name),
-                                 NUM2DBL (value));
+  GValue gval = { 0, };
+  g_value_init (&gval, RVAL2GTYPE (value));
+  clutter_shader_set_uniform (shader, StringValuePtr (name), &gval);
+  g_value_unset (&gval);
   return self;
 }
 

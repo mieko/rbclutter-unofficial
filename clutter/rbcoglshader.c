@@ -29,7 +29,7 @@ static void
 rb_cogl_shader_free (void *ptr)
 {
   if (ptr)
-    cogl_shader_unref (ptr);
+    cogl_handle_unref (ptr);
 }
 
 static VALUE
@@ -84,24 +84,14 @@ static VALUE
 rb_cogl_shader_get_info_log (VALUE self)
 {
   CoglHandle shader = rb_cogl_shader_get_handle (self);
-  char buf[512];
+  gchar *buf;
+  VALUE ret;
 
-  buf[0] = '\0';
-  buf[sizeof (buf) - 1] = '\0';
-  cogl_shader_get_info_log (shader, sizeof (buf) - 1, buf);
+  buf = cogl_shader_get_info_log (shader);
+  ret = rb_str_new2 (buf);
+  g_free (buf);
 
-  return rb_str_new2 (buf);
-}
-
-static VALUE
-rb_cogl_shader_get_parameter (VALUE self, VALUE pname)
-{
-  CoglHandle shader = rb_cogl_shader_get_handle (self);
-  COGLint value;
-
-  cogl_shader_get_parameteriv (shader, NUM2UINT (pname), &value);
-
-  return INT2NUM (value);
+  return ret;
 }
 
 void
@@ -117,5 +107,4 @@ rb_cogl_shader_init ()
   rb_define_method (klass, "source", rb_cogl_shader_source, 1);
   rb_define_method (klass, "compile", rb_cogl_shader_compile, 0);
   rb_define_method (klass, "info_log", rb_cogl_shader_get_info_log, 0);
-  rb_define_method (klass, "get_parameter", rb_cogl_shader_get_parameter, 1);
 }

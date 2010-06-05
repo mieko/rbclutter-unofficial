@@ -25,10 +25,8 @@ def rbval_to_cval(field_type, rbval)
     "NUM2UINT (#{rbval})"
   when "gint"
     "NUM2INT (#{rbval})"
-  when "ClutterUnit"
-    "rbclt_num_to_units (#{rbval})"
-  when "ClutterFixed"
-    "rbclt_num_to_fixed (#{rbval})"
+  when "gfloat"
+    "NUM2DBL (#{rbval})"
   else
     raise ArgumentError, "Unknown field type #{field_type}\n"
   end
@@ -40,10 +38,8 @@ def cval_to_rbval(field_type, cval)
     "INT2NUM (#{cval})"
   when "guint"
     "UINT2NUM (#{cval})"
-  when "ClutterUnit"
-    "rb_float_new (CLUTTER_UNITS_TO_FLOAT (#{cval}))"
-  when "ClutterFixed"
-    "rb_float_new (CLUTTER_FIXED_TO_DOUBLE (#{cval}))"
+  when "gfloat"
+    "rb_float_new (#{cval})"
   else
     raise ArgumentError, "Unknown field type #{field_type}\n"
   end

@@ -1,5 +1,5 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
- * Copyright (C) 2007  Neil Roberts
+ * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,16 +17,18 @@
  * MA  02110-1301  USA
  */
 
-#ifndef _RBCLT_ALPHA_FUNC_H
-#define _RBCLT_ALPHA_FUNC_H
-
+#include <rbgobject.h>
 #include <clutter/clutter.h>
 
-void rbclt_alpha_func_init (VALUE alpha_klass);
+#include "rbclutter.h"
+#include "rbcltpath.h"
 
-void rbclt_alpha_func_from_rb_value (VALUE func,
-                                     ClutterAlphaFunc *func_ret,
-                                     gpointer *data,
-                                     GDestroyNotify *notify);
+VALUE rbclt_c_path;
 
-#endif /* _RBCLT_ALPHA_FUNC_H */
+void
+rbclt_path_init ()
+{
+  VALUE klass = G_DEF_CLASS (CLUTTER_TYPE_PATH, "Path", rbclt_c_clutter);
+
+  rbclt_c_path = klass;
+}

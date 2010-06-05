@@ -27,16 +27,16 @@ find_header("rbgobject.h", *$:) or show_fail
 BOXED_TYPES = %w{ color geometry knot vertex actorbox perspective fog }
 
 $objs = %w{ rbclutter.o rbcltactor.o rbcltalpha.o rbcltbehaviour.o rbcltbehaviourpath.o } \
-+ %w{ rbcltcontainer.o rbcltgroup.o rbcltlabel.o rbcltmain.o rbcltstage.o rbclttexture.o } \
++ %w{ rbcltcontainer.o rbcltgroup.o rbcltmain.o rbcltstage.o rbclttexture.o } \
 + %w{ rbclttimeline.o rbcltevent.o rbcltkeysyms.o rbcltbehaviourscale.o } \
-+ %w{ rbcltbehaviourbspline.o rbcltbehaviourdepth.o rbcltbehaviourellipse.o } \
-+ %w{ rbcltbehaviouropacity.o rbcltbehaviourrotate.o rbcltalphafunc.o rbclteffect.o } \
-+ %w{ rbcltentry.o rbcltrectangle.o rbcltclonetexture.o rbcltfeature.o rbcltbackend.o } \
++ %w{ rbcltbehaviourdepth.o rbcltbehaviourellipse.o } \
++ %w{ rbcltbehaviouropacity.o rbcltbehaviourrotate.o  } \
++ %w{ rbcltrectangle.o rbcltfeature.o rbcltbackend.o } \
 + %w{ rbcltmedia.o rbcltshader.o rbcltcallbackfunc.o rbcltframesource.o } \
 + %w{ rbcltstagemanager.o rbcltchildmeta.o rbcltscript.o rbcltscore.o } \
-+ %w{ rbcltlistmodel.o rbcltmodel.o }
++ %w{ rbcltlistmodel.o rbcltmodel.o rbcltpath.o }
 
-$objs += %w{ rbcogl.o rbcoglconsts.o rbcogltexture.o rbcoglprimitives.o } \
+$objs += %w{ rbcogl.o rbcogltexture.o rbcoglprimitives.o } \
 + %w{ rbcoglshader.o rbcoglprogram.o rbcogloffscreen.o }
 
 # Add the boxed types to the object files list
