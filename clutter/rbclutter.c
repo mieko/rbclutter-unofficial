@@ -72,6 +72,7 @@ extern void rbclt_model_init ();
 extern void rbclt_list_model_init ();
 extern void rbclt_fog_init ();
 extern void rbclt_path_init ();
+extern void rbclt_cairo_texture_init ();
 
 extern void rb_cogl_init ();
 extern void rb_cogl_texture_init ();
@@ -294,6 +295,7 @@ Init_clutter ()
   rbclt_list_model_init ();
   rbclt_fog_init ();
   rbclt_path_init ();
+  rbclt_cairo_texture_init ();
 
   rb_cogl_init ();
   rb_cogl_texture_init ();

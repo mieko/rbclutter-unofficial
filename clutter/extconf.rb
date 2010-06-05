@@ -21,8 +21,10 @@ require 'pkg-config'
 
 PKGConfig.have_package('glib-2.0') or show_fail
 PKGConfig.have_package('clutter-1.0', 1, 2, 0) or show_fail
+PKGConfig.have_package('cairo') or show_fail
 
 find_header("rbgobject.h", *$:) or show_fail
+find_header("rb_cairo.h", *$:) or show_fail
 
 BOXED_TYPES = %w{ color geometry knot vertex actorbox perspective fog }
 
@@ -34,7 +36,7 @@ $objs = %w{ rbclutter.o rbcltactor.o rbcltalpha.o rbcltbehaviour.o rbcltbehaviou
 + %w{ rbcltrectangle.o rbcltfeature.o rbcltbackend.o } \
 + %w{ rbcltmedia.o rbcltshader.o rbcltcallbackfunc.o rbcltframesource.o } \
 + %w{ rbcltstagemanager.o rbcltchildmeta.o rbcltscript.o rbcltscore.o } \
-+ %w{ rbcltlistmodel.o rbcltmodel.o rbcltpath.o }
++ %w{ rbcltlistmodel.o rbcltmodel.o rbcltpath.o rbcltcairotexture.o }
 
 $objs += %w{ rbcogl.o rbcogltexture.o rbcoglprimitives.o } \
 + %w{ rbcoglshader.o rbcoglprogram.o rbcogloffscreen.o }
