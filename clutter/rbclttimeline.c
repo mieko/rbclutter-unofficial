@@ -176,7 +176,7 @@ rbclt_timeline_init ()
   VALUE klass = G_DEF_CLASS (CLUTTER_TYPE_TIMELINE, "Timeline",
                              rbclt_c_clutter);
 
-  rb_define_method (klass, "initialize", rbclt_timeline_initialize, -1);
+  rb_define_method (klass, "initialize", rbclt_timeline_initialize, 1);
   rb_define_method (klass, "dup", rbclt_timeline_dup, 0);
   rb_define_method (klass, "start", rbclt_timeline_start, 0);
   rb_define_method (klass, "pause", rbclt_timeline_pause, 0);
