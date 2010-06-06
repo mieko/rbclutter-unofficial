@@ -41,7 +41,7 @@ rbclt_list_model_do_initialize (VALUE arg)
 
   for (i = 0; i < data->argc / 2; i++)
     {
-      data->types[i] = CLASS2GTYPE (data->argv[i * 2]);
+      data->types[i] = rbgobj_gtype_get (data->argv[i * 2]);
       data->names[i] = StringValuePtr (data->argv[i * 2 + 1]);
     }
 

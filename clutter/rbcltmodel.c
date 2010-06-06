@@ -90,7 +90,7 @@ rbclt_model_do_set_types (VALUE arg)
   int i;
 
   for (i = 0; i < data->argc; i++)
-    data->types[i] = CLASS2GTYPE (data->argv[i]);
+    data->types[i] = rbgobj_gtype_get (data->argv[i]);
 
   clutter_model_set_types (model, data->argc, data->types);
 

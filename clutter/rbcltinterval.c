@@ -68,7 +68,7 @@ rbclt_interval_initialize (VALUE self, VALUE klass,
   InitializeData data;
 
   data.self = self;
-  data.value_type = CLASS2GTYPE (klass);
+  data.value_type = rbgobj_gtype_get (klass);
   data.initial_value = initial_value;
   data.final_value = final_value;
 
