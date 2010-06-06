@@ -201,11 +201,9 @@ rb_cogl_texture_get_data (int argc, VALUE *argv, VALUE self)
   rowstride = (NIL_P (rowstride_arg) || NUM2UINT (rowstride_arg) == 0)
     ? cogl_texture_get_rowstride (tex) : NUM2UINT (rowstride_arg);
 
-  data = rb_str_buf_new (rowstride * cogl_texture_get_height (tex));
+  data = rb_str_new (NULL, rowstride * cogl_texture_get_height (tex));
   cogl_texture_get_data (tex, format, rowstride,
-                         (guchar *) RSTRING (data)->ptr);
-
-  RSTRING (data)->len = rowstride * cogl_texture_get_height (tex);
+                         (guchar *) RSTRING_PTR (data));
 
   return data;
 }

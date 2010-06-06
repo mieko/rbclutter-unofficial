@@ -92,12 +92,12 @@ rbclt_texture_set_from_rgb_data (VALUE self, VALUE data, VALUE has_alpha,
   if (width < 0 || height < 0 || rowstride < 0 || bpp < 1)
     rb_raise (rb_eArgError, "bad value used for image data parameters");
   /* Make sure the data is large enough */
-  if (RSTRING (data)->len < width * height * bpp
-      || RSTRING (data)->len < height * rowstride)
+  if (RSTRING_LEN (data) < width * height * bpp
+      || RSTRING_LEN (data) < height * rowstride)
     rb_raise (rb_eArgError, "string too small for image data");
 
   clutter_texture_set_from_rgb_data (texture,
-                                     (guchar *) RSTRING (data)->ptr,
+                                     (guchar *) RSTRING_PTR (data),
                                      RTEST (has_alpha),
                                      width, height,
                                      rowstride,
@@ -131,12 +131,12 @@ rbclt_texture_set_area_from_rgb_data (VALUE self, VALUE data, VALUE has_alpha,
   if (width < 0 || height < 0 || rowstride < 0 || bpp < 1)
     rb_raise (rb_eArgError, "bad value used for image data parameters");
   /* Make sure the data is large enough */
-  if (RSTRING (data)->len < width * height * bpp
-      || RSTRING (data)->len < height * rowstride)
+  if (RSTRING_LEN (data) < width * height * bpp
+      || RSTRING_LEN (data) < height * rowstride)
     rb_raise (rb_eArgError, "string too small for image data");
 
   clutter_texture_set_area_from_rgb_data (texture,
-                                          (guchar *) RSTRING (data)->ptr,
+                                          (guchar *) RSTRING_PTR (data),
                                           RTEST (has_alpha),
                                           x, y,
                                           width, height,
@@ -167,11 +167,11 @@ rbclt_texture_set_from_yuv_data (VALUE self, VALUE data,
   if (width < 0 || height < 0)
     rb_raise (rb_eArgError, "bad value used for image data parameters");
   /* Make sure the data is large enough */
-  if (RSTRING (data)->len < width * height * sizeof (gushort))
+  if (RSTRING_LEN (data) < width * height * sizeof (gushort))
     rb_raise (rb_eArgError, "string too small for image data");
 
   clutter_texture_set_from_yuv_data (texture,
-                                     (guchar *) RSTRING (data)->ptr,
+                                     (guchar *) RSTRING_PTR (data),
                                      width, height, flags,
                                      &error);
 

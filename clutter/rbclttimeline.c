@@ -134,10 +134,9 @@ rbclt_timeline_list_markers (int argc, VALUE *argv, VALUE self)
                                            ? -1 : NUM2INT (frame_num),
                                            &n_markers);
 
-  ret = rb_ary_new2 (n_markers);
+  ret = rb_ary_new ();
   for (i = 0; i < n_markers; i++)
-    RARRAY_PTR (ret)[i] = rb_str_new2 (markers[i]);
-  RARRAY (ret)->len = n_markers;
+    rb_ary_push (ret, rb_str_new2 (markers[i]));
 
   g_strfreev (markers);
 

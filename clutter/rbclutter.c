@@ -85,8 +85,9 @@ extern void rb_cogl_matrix_init ();
 VALUE
 rbclt_call_init_func (int argc, VALUE *argv, RBCLTInitFunc func)
 {
-  VALUE init_args, prg_name;
-  char **args_copy;
+  VALUE init_args;
+  VALUE *arg_values;
+  char **arg_strings;
   int init_argc, i;
   ClutterInitError eval;
 
@@ -97,23 +98,24 @@ rbclt_call_init_func (int argc, VALUE *argv, RBCLTInitFunc func)
     init_args = rb_argv;
 
   Check_Type (init_args, T_ARRAY);
-  init_argc = RARRAY (init_args)->len;
+  init_argc = RARRAY_LEN (init_args);
+
+  /* Copy all of the values to another array so that if StringValuePtr
+     changes the type of the VALUE then it won't affect the values in
+     the existing array */
+  arg_values = ALLOC_N (VALUE, init_argc + 1);
+  /* Prepend $0 */
+  arg_values[0] = rb_gv_get ("0");
+  memcpy (arg_values + 1, RARRAY_PTR (init_args), sizeof (VALUE) * init_argc);
+  init_argc++;
 
   /* Convert all of the arguments to strings */
+  arg_strings = ALLOC_N (char *, init_argc);
   for (i = 0; i < init_argc; i++)
-    rb_ary_store (init_args, i, StringValue (RARRAY (init_args)->ptr[i]));
-
-  /* Make a copy of the array and prepend $0 */
-  prg_name = rb_gv_get ("0");
-  prg_name = StringValue (prg_name);
-  args_copy = ALLOC_N (char *, init_argc + 1);
-  args_copy[0] = RSTRING (prg_name)->ptr;
-  for (i = 0; i < init_argc; i++)
-    args_copy[i + 1] = RSTRING (RARRAY (init_args)->ptr[i])->ptr;
+    arg_strings[i] = StringValuePtr (arg_values[i]);
 
   /* Initialize clutter */
-  init_argc++;
-  eval = (* func) (&init_argc, &args_copy);
+  eval = (* func) (&init_argc, &arg_strings);
 
   /* If it worked then copy the altered arguments back */
   if (eval == CLUTTER_INIT_SUCCESS)
@@ -121,10 +123,11 @@ rbclt_call_init_func (int argc, VALUE *argv, RBCLTInitFunc func)
       rb_ary_clear (init_args);
 
       for (i = 1; i < init_argc; i++)
-        rb_ary_push (init_args, rb_str_new2 (args_copy[i]));
+        rb_ary_push (init_args, rb_str_new2 (arg_strings[i]));
     }
 
-  free (args_copy);
+  free (arg_values);
+  free (arg_strings);
 
   /* If it didn't work then throw an exception */
   if (eval != CLUTTER_INIT_SUCCESS)

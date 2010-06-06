@@ -74,11 +74,11 @@ rbclt_script_load_from_data (VALUE self, VALUE data)
   guint merge_id;
   GError *error = NULL;
 
-  StringValuePtr (data);
+  StringValue (data);
 
   merge_id = clutter_script_load_from_data (script,
-                                            RSTRING (data)->ptr,
-                                            RSTRING (data)->len,
+                                            RSTRING_PTR (data),
+                                            RSTRING_LEN (data),
                                             &error);
 
   if (error)
