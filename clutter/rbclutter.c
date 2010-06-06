@@ -80,6 +80,7 @@ extern void rb_cogl_primitives_init ();
 extern void rb_cogl_shader_init ();
 extern void rb_cogl_program_init ();
 extern void rb_cogl_offscreen_init ();
+extern void rb_cogl_matrix_init ();
 
 VALUE
 rbclt_call_init_func (int argc, VALUE *argv, RBCLTInitFunc func)
@@ -303,4 +304,5 @@ Init_clutter ()
   rb_cogl_shader_init ();
   rb_cogl_program_init ();
   rb_cogl_offscreen_init ();
+  rb_cogl_matrix_init ();
 }
