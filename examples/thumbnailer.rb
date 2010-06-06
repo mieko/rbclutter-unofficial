@@ -2,6 +2,7 @@
 
 # Ruby bindings for the Clutter 'interactive canvas' library.
 # Copyright (C) 2007-2008  Neil Roberts
+# Copyright (C) 2010  Intel Corporation
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,112 +18,101 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
+
 require 'clutter'
 require 'gdk_pixbuf2'
 
 class Thumbnailer
-  THUMBNAIL_SIZE = 200
+  THUMBNAIL_SIZE = 160
 
   def initialize(filenames)
     @filenames = filenames.dup
 
     # Next image to load
-    @next_load = 0
-    # Next actor to load to
-    @next_load_actor = 0
+    @next_image = 0
+    # Next position to load to
+    @next_position = 0
 
-    create_actors
-
-    # Load a screenful of images
-    load_screen
-
-    # Start the first timeline
-    @behaviours[0].alpha.timeline.rewind.start
-  end
-
-  private
-  def create_actors
-    stage = Clutter::Stage.get_default
-
-    # Make enough actors and corresponding behaviours to fill the
-    # screen
+    # Keep track of all the actors we added so we can remove them
+    # easily
     @actors = []
-    @behaviours = []
 
-    start_x = stage.width / 2 - THUMBNAIL_SIZE / 2
-    start_y = stage.height
+    stage = Clutter::Stage.get_default
+    # Number of actors to fit horizontally
+    @actors_x = (stage.width / THUMBNAIL_SIZE).to_i
+    # Number of actors to fit vertically
+    @actors_y = (stage.height / THUMBNAIL_SIZE).to_i
 
-    (stage.height / THUMBNAIL_SIZE).times do |y|
-      (stage.width / THUMBNAIL_SIZE).times do |x|
-        @actors << actor = Clutter::Texture.new
-        actor.set_position(start_x, start_y)
+    @start_x = stage.width / 2.0 - THUMBNAIL_SIZE / 2.0
+    @start_y = stage.height
 
-        stage << actor
-
-        timeline = Clutter::Timeline.new(30, 30)
-        alpha = Clutter::Alpha.new(timeline, Clutter::Alpha::SINE_INC)
-        @behaviours << behaviour = Clutter::BehaviourPath.new(alpha)
-        timeline.signal_connect("completed") { on_completed(actor) }
-        behaviour.append_knots(Clutter::Knot.new(start_x, start_y),
-                               Clutter::Knot.new(x * THUMBNAIL_SIZE, y * THUMBNAIL_SIZE))
-        behaviour.apply(actor)
-      end
-    end
+    # Load the first actor
+    load_actor
   end
 
   private
-  def on_completed(actor)
-    if @removing
-      Clutter::Stage.get_default.remove(actor)
-      @removed_count += 1
-      if @removed_count >= @actors.size
-        @removing = nil
-        @behaviours[0].alpha.timeline.rewind.start
-      end
-    else
-      if index = @actors.index(actor)
-        if index >= @next_load_actor - 1
-          # Start removing the thumbnails
-          @removing = @behaviours
-          @removed_count = 0
-          @behaviours.each do |b|
-            b.alpha.set_func(Clutter::Alpha::SINE_DEC)
-            b.alpha.timeline.rewind.start
-          end
-          # Create a new set of actors
-          create_actors
-          # Load the next screen
-          if @next_load >= @filenames.size
-            Clutter::main_quit
-          else
-            @next_load_actor = 0
-            load_screen
-          end
-        else
-          # Start the next timeline
-          @behaviours[index + 1].alpha.timeline.rewind.start
-        end
-      end
-    end
-  end
-
-  private
-  def load_screen
-    while @next_load_actor < @actors.size and @next_load < @filenames.size
+  def load_actor
+    if @next_image < @filenames.size
       # Pre-scale the image using GDK pixbuf so that it doesn't have
       # to be scaled every frame by clutter
-      pixbuf = Gdk::Pixbuf.new(@filenames[@next_load],
+      pixbuf = Gdk::Pixbuf.new(@filenames[@next_image],
                                THUMBNAIL_SIZE, THUMBNAIL_SIZE)
-      @next_load += 1
+      @next_image += 1
 
-      @actors[@next_load_actor].set_from_rgb_data(pixbuf.pixels,
-                                                  pixbuf.has_alpha?,
-                                                  pixbuf.width,
-                                                  pixbuf.height,
-                                                  pixbuf.rowstride,
-                                                  pixbuf.has_alpha? ? 4 : 3, 0)
+      actor = Clutter::Texture.new
+      actor.set_from_rgb_data(pixbuf.pixels,
+                              pixbuf.has_alpha?,
+                              pixbuf.width,
+                              pixbuf.height,
+                              pixbuf.rowstride,
+                              pixbuf.has_alpha? ? 4 : 3, 0)
 
-      @next_load_actor += 1
+      # Set the actor to animate itself into the right position
+      actor.set_position(@start_x, @start_y)
+      anim = actor.animate(Clutter::EASE_OUT_SINE, 400,
+                           "x" => (@next_position % @actors_x) * THUMBNAIL_SIZE,
+                           "y" => (@next_position / @actors_x) * THUMBNAIL_SIZE)
+
+      Clutter::Stage.get_default << actor
+
+      # Listen for when the animation is complete so we can start another
+      anim.signal_connect_after("completed") { animate_in_completed_cb(actor) }
+
+      @actors << actor
+
+      @next_position += 1
+    end
+  end
+
+  private
+  def animate_in_completed_cb(actor)
+    # Actor has finished being added
+    # If the screen is full then start removing all of the actors
+    if @next_position >= @actors_x * @actors_y
+      @actors.each do |actor|
+        anim = actor.animate(Clutter::EASE_OUT_SINE, 1000,
+                             "x" => @start_x,
+                             "y" => @start_y)
+        anim.signal_connect_after("completed") do
+          animate_out_completed_cb(actor)
+        end
+      end
+    else
+      # Start another actor
+      load_actor
+    end
+  end
+
+  private
+  def animate_out_completed_cb(actor)
+    # Actor has finished being removed
+    @actors.delete(actor)
+    actor.destroy
+    # If it's the last actor then we can start loading another with
+    # a clean screen
+    if @actors.length == 0
+      @next_position = 0
+      load_actor
     end
   end
 end
@@ -137,7 +127,6 @@ end
 
 stage = Clutter::Stage.get_default
 stage.color = Clutter::Color.new(0, 0, 0)
-stage.fullscreen
 
 stage.signal_connect("key_press_event") do |stage, event|
   if event.keyval == Clutter::Key_q || event.keyval == Clutter::Key_Q \
