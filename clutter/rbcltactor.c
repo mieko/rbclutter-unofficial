@@ -75,7 +75,22 @@ rbclt_actor_type_register (int argc, VALUE *argv, VALUE self)
   rb_include_module (self, mod);
 
   return result;
- }
+}
+
+static void
+rbclt_actor_mark (void *p)
+{
+  ClutterActor *actor = CLUTTER_ACTOR (p);
+  ClutterAnimation *anim;
+
+  /* We need to mark the animation object because this is accessible
+     from Ruby so it may have a Ruby proxy object attached. The
+     animation object is not a property so it wouldn't get marked any
+     other way */
+
+  if ((anim = clutter_actor_get_animation (actor)))
+    rbgobj_gc_mark_instance (anim);
+}
 
 static VALUE
 rbclt_actor_show (VALUE self)
@@ -862,7 +877,8 @@ rbclt_actor_pop_internal (VALUE self)
 void
 rbclt_actor_init ()
 {
-  VALUE klass = G_DEF_CLASS (CLUTTER_TYPE_ACTOR, "Actor", rbclt_c_clutter);
+  VALUE klass = G_DEF_CLASS2 (CLUTTER_TYPE_ACTOR, "Actor", rbclt_c_clutter,
+                              rbclt_actor_mark, NULL);
 
   rbclt_c_actor = klass;
 
