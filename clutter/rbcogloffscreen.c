@@ -56,5 +56,5 @@ rb_cogl_offscreen_init ()
   rb_c_cogl_offscreen_error = rb_define_class_under (klass, "Error",
                                                      rb_eStandardError);
 
-  rb_define_method (klass, "initialize", rb_cogl_offscreen_initialize, -1);
+  rb_define_method (klass, "initialize", rb_cogl_offscreen_initialize, 1);
 }
