@@ -1,5 +1,6 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2008  Neil Roberts
+ * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,36 +22,26 @@
 #include <cogl/cogl.h>
 
 #include "rbclutter.h"
-#include "rbcogltexture.h"
+#include "rbcoglhandle.h"
 
-static VALUE rb_c_cogl_offscreen;
+VALUE rb_c_cogl_offscreen;
 static VALUE rb_c_cogl_offscreen_error;
-
-static void
-rb_cogl_offscreen_free (void *ptr)
-{
-  if (ptr)
-    cogl_handle_unref (ptr);
-}
-
-static VALUE
-rb_cogl_offscreen_allocate (VALUE klass)
-{
-  return Data_Wrap_Struct (klass, NULL, rb_cogl_offscreen_free, NULL);
-}
 
 static VALUE
 rb_cogl_offscreen_initialize (VALUE self, VALUE tex)
 {
   CoglHandle offscreen;
-  CoglHandle tex_handle = rb_cogl_texture_get_handle (tex);
+  CoglHandle tex_handle = rb_cogl_handle_get_handle (tex);
+
+  if (!cogl_is_texture (tex_handle))
+    rb_raise (rb_eArgError, "CoglTexture handle expected");
 
   offscreen = cogl_offscreen_new_to_texture (tex_handle);
 
   if (offscreen == COGL_INVALID_HANDLE)
     rb_raise (rb_c_cogl_offscreen_error, "failed to create offscreen object");
 
-  DATA_PTR (self) = offscreen;
+  rb_cogl_handle_initialize (self, offscreen);
 
   return Qnil;
 }
@@ -59,13 +50,11 @@ void
 rb_cogl_offscreen_init ()
 {
   VALUE klass = rb_define_class_under (rbclt_c_cogl, "Offscreen",
-                                       rb_cObject);
+                                       rb_c_cogl_handle);
   rb_c_cogl_offscreen = klass;
 
   rb_c_cogl_offscreen_error = rb_define_class_under (klass, "Error",
                                                      rb_eStandardError);
-
-  rb_define_alloc_func (klass, rb_cogl_offscreen_allocate);
 
   rb_define_method (klass, "initialize", rb_cogl_offscreen_initialize, -1);
 }

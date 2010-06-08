@@ -18,11 +18,11 @@
  * MA  02110-1301  USA
  */
 
-#ifndef _RBCOGL_TEXTURE_H
-#define _RBCOGL_TEXTURE_H
+#ifndef _RBCOGL_OFFSCREEN_H
+#define _RBCOGL_OFFSCREEN_H
 
-#include <cogl/cogl.h>
+#include <ruby.h>
 
-extern VALUE rb_c_cogl_texture;
+extern VALUE rb_c_cogl_offscreen;
 
-#endif /* _RBCOGL_TEXTURE_H */
+#endif /* _RBCOGL_OFFSCREEN_H */

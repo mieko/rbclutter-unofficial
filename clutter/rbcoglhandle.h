@@ -1,6 +1,5 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
- * Copyright (C) 2008  Neil Roberts
- * Copyright (C) 2010  Intel Corporation
+ * Copyright (C) 2010  Neil Roberts
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,11 +17,17 @@
  * MA  02110-1301  USA
  */
 
-#ifndef _RBCOGL_TEXTURE_H
-#define _RBCOGL_TEXTURE_H
+#ifndef _RBCOGL_HANDLE_H
+#define _RBCOGL_HANDLE_H
 
 #include <cogl/cogl.h>
 
-extern VALUE rb_c_cogl_texture;
+extern VALUE rb_c_cogl_handle;
 
-#endif /* _RBCOGL_TEXTURE_H */
+void rb_cogl_handle_initialize (VALUE self, CoglHandle handle);
+VALUE rb_cogl_handle_to_value (CoglHandle handle);
+VALUE rb_cogl_handle_to_value_unref (CoglHandle handle);
+
+CoglHandle rb_cogl_handle_get_handle (VALUE obj);
+
+#endif /* _RBCOGL_HANDLE_H */

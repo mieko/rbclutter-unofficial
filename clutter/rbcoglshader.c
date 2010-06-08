@@ -1,5 +1,6 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2008  Neil Roberts
+ * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,21 +23,9 @@
 
 #include "rbclutter.h"
 #include "rbcoglshader.h"
+#include "rbcoglhandle.h"
 
-static VALUE rb_c_cogl_shader;
-
-static void
-rb_cogl_shader_free (void *ptr)
-{
-  if (ptr)
-    cogl_handle_unref (ptr);
-}
-
-static VALUE
-rb_cogl_shader_allocate (VALUE klass)
-{
-  return Data_Wrap_Struct (klass, NULL, rb_cogl_shader_free, NULL);
-}
+VALUE rb_c_cogl_shader;
 
 static VALUE
 rb_cogl_shader_initialize (VALUE self, VALUE shader_type)
@@ -45,28 +34,15 @@ rb_cogl_shader_initialize (VALUE self, VALUE shader_type)
 
   shader = cogl_create_shader (NUM2UINT (shader_type));
 
-  DATA_PTR (self) = shader;
+  rb_cogl_handle_initialize (self, shader);
 
   return Qnil;
-}
-
-CoglHandle
-rb_cogl_shader_get_handle (VALUE obj)
-{
-  void *ptr;
-
-  if (!RTEST (rb_obj_is_kind_of (obj, rb_c_cogl_shader)))
-    rb_raise (rb_eTypeError, "not a Cogl shader");
-
-  Data_Get_Struct (obj, void, ptr);
-
-  return (CoglHandle) ptr;
 }
 
 static VALUE
 rb_cogl_shader_source (VALUE self, VALUE source)
 {
-  cogl_shader_source (rb_cogl_shader_get_handle (self),
+  cogl_shader_source (rb_cogl_handle_get_handle (self),
                       StringValuePtr (source));
 
   return self;
@@ -75,7 +51,7 @@ rb_cogl_shader_source (VALUE self, VALUE source)
 static VALUE
 rb_cogl_shader_compile (VALUE self)
 {
-  cogl_shader_compile (rb_cogl_shader_get_handle (self));
+  cogl_shader_compile (rb_cogl_handle_get_handle (self));
 
   return self;
 }
@@ -83,7 +59,7 @@ rb_cogl_shader_compile (VALUE self)
 static VALUE
 rb_cogl_shader_get_info_log (VALUE self)
 {
-  CoglHandle shader = rb_cogl_shader_get_handle (self);
+  CoglHandle shader = rb_cogl_handle_get_handle (self);
   gchar *buf;
   VALUE ret;
 
@@ -98,10 +74,8 @@ void
 rb_cogl_shader_init ()
 {
   VALUE klass = rb_define_class_under (rbclt_c_cogl, "Shader",
-                                       rb_cObject);
+                                       rb_c_cogl_handle);
   rb_c_cogl_shader = klass;
-
-  rb_define_alloc_func (klass, rb_cogl_shader_allocate);
 
   rb_define_method (klass, "initialize", rb_cogl_shader_initialize, 1);
   rb_define_method (klass, "source", rb_cogl_shader_source, 1);

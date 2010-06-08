@@ -1,5 +1,6 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2008  Neil Roberts
+ * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +21,8 @@
 #ifndef _RBCOGL_SHADER_H
 #define _RBCOGL_SHADER_H
 
-#include <cogl/cogl.h>
+#include <ruby.h>
 
-CoglHandle rb_cogl_shader_get_handle (VALUE obj);
+extern VALUE rb_c_cogl_shader;
 
 #endif /* _RBCOGL_SHADER_H */

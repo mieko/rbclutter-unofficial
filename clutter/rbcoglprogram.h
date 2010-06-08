@@ -1,5 +1,4 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
- * Copyright (C) 2008  Neil Roberts
  * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
@@ -18,11 +17,11 @@
  * MA  02110-1301  USA
  */
 
-#ifndef _RBCOGL_TEXTURE_H
-#define _RBCOGL_TEXTURE_H
+#ifndef _RBCOGL_PROGRAM_H
+#define _RBCOGL_PROGRAM_H
 
-#include <cogl/cogl.h>
+#include <ruby.h>
 
-extern VALUE rb_c_cogl_texture;
+extern VALUE rb_c_cogl_program;
 
-#endif /* _RBCOGL_TEXTURE_H */
+#endif /* _RBCOGL_PROGRAM_H */

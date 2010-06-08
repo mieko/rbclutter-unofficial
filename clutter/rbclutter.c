@@ -77,6 +77,7 @@ extern void rbclt_interval_init ();
 extern void rbclt_animation_init ();
 
 extern void rb_cogl_init ();
+extern void rb_cogl_handle_init ();
 extern void rb_cogl_texture_init ();
 extern void rb_cogl_primitives_init ();
 extern void rb_cogl_shader_init ();
@@ -318,6 +319,7 @@ Init_clutter ()
   rbclt_animation_init ();
 
   rb_cogl_init ();
+  rb_cogl_handle_init ();
   rb_cogl_texture_init ();
   rb_cogl_primitives_init ();
   rb_cogl_shader_init ();

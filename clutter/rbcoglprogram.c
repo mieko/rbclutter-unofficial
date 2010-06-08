@@ -21,22 +21,11 @@
 #include <cogl/cogl.h>
 
 #include "rbclutter.h"
+#include "rbcoglhandle.h"
 #include "rbcoglshader.h"
+#include "rbcoglprogram.h"
 
-static VALUE rb_c_cogl_program;
-
-static void
-rb_cogl_program_free (void *ptr)
-{
-  if (ptr)
-    cogl_program_unref (ptr);
-}
-
-static VALUE
-rb_cogl_program_allocate (VALUE klass)
-{
-  return Data_Wrap_Struct (klass, NULL, rb_cogl_program_free, NULL);
-}
+VALUE rb_c_cogl_program;
 
 static VALUE
 rb_cogl_program_initialize (VALUE self)
@@ -45,29 +34,16 @@ rb_cogl_program_initialize (VALUE self)
 
   program = cogl_create_program ();
 
-  DATA_PTR (self) = program;
+  rb_cogl_handle_initialize (self, program);
 
   return Qnil;
-}
-
-static CoglHandle
-rb_cogl_program_get_handle (VALUE obj)
-{
-  void *ptr;
-
-  if (!RTEST (rb_obj_is_kind_of (obj, rb_c_cogl_program)))
-    rb_raise (rb_eTypeError, "not a Cogl program");
-
-  Data_Get_Struct (obj, void, ptr);
-
-  return (CoglHandle) ptr;
 }
 
 static VALUE
 rb_cogl_program_attach_shader (VALUE self, VALUE shader_arg)
 {
-  CoglHandle program = rb_cogl_program_get_handle (self);
-  CoglHandle shader = rb_cogl_shader_get_handle (shader_arg);
+  CoglHandle program = rb_cogl_handle_get_handle (self);
+  CoglHandle shader = rb_cogl_handle_get_handle (shader_arg);
 
   cogl_program_attach_shader (program, shader);
 
@@ -77,7 +53,7 @@ rb_cogl_program_attach_shader (VALUE self, VALUE shader_arg)
 static VALUE
 rb_cogl_program_link (VALUE self)
 {
-  cogl_program_link (rb_cogl_program_get_handle (self));
+  cogl_program_link (rb_cogl_handle_get_handle (self));
 
   return self;
 }
@@ -88,7 +64,7 @@ rb_cogl_program_use (VALUE self, VALUE program)
   if (NIL_P (program))
     cogl_program_use (COGL_INVALID_HANDLE);
   else
-    cogl_program_use (rb_cogl_program_get_handle (program));
+    cogl_program_use (rb_cogl_handle_get_handle (program));
 
   return program;
 }
@@ -96,7 +72,7 @@ rb_cogl_program_use (VALUE self, VALUE program)
 static VALUE
 rb_cogl_program_get_uniform_location (VALUE self, VALUE uniform_name)
 {
-  CoglHandle program = rb_cogl_program_get_handle (self);
+  CoglHandle program = rb_cogl_handle_get_handle (self);
   int location;
 
   location = cogl_program_get_uniform_location (program,
@@ -117,10 +93,8 @@ void
 rb_cogl_program_init ()
 {
   VALUE klass = rb_define_class_under (rbclt_c_cogl, "Program",
-                                       rb_cObject);
+                                       rb_c_cogl_handle);
   rb_c_cogl_program = klass;
-
-  rb_define_alloc_func (klass, rb_cogl_program_allocate);
 
   rb_define_method (klass, "initialize", rb_cogl_program_initialize, 0);
   rb_define_method (klass, "attach_shader", rb_cogl_program_attach_shader, 1);

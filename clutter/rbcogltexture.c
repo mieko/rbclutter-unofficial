@@ -1,5 +1,6 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2008  Neil Roberts
+ * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,10 +23,11 @@
 #include <clutter/clutter.h>
 
 #include "rbclutter.h"
+#include "rbcoglhandle.h"
 #include "rbcogltexture.h"
 
+VALUE rb_c_cogl_texture;
 static VALUE rb_c_cogl_texture_error;
-static VALUE rb_c_cogl_texture;
 
 typedef struct _PolygonData PolygonData;
 
@@ -124,23 +126,15 @@ rb_cogl_texture_initialize (int argc, VALUE *argv, VALUE self)
   else if (tex == COGL_INVALID_HANDLE)
     rb_raise (rb_c_cogl_texture_error, "Cogl texture creation failed");
 
-  G_INITIALIZE (self, tex);
-
-  cogl_handle_unref (tex);
+  rb_cogl_handle_initialize (self, tex);
 
   return Qnil;
-}
-
-CoglHandle
-rb_cogl_texture_get_handle (VALUE obj)
-{
-  return (CoglHandle) RVAL2BOXED (obj, COGL_TYPE_HANDLE);
 }
 
 static VALUE
 rb_cogl_texture_get_width (VALUE self)
 {
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
+  CoglHandle tex = rb_cogl_handle_get_handle (self);
 
   return UINT2NUM (cogl_texture_get_width (tex));
 }
@@ -148,7 +142,7 @@ rb_cogl_texture_get_width (VALUE self)
 static VALUE
 rb_cogl_texture_get_height (VALUE self)
 {
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
+  CoglHandle tex = rb_cogl_handle_get_handle (self);
 
   return UINT2NUM (cogl_texture_get_height (tex));
 }
@@ -156,7 +150,7 @@ rb_cogl_texture_get_height (VALUE self)
 static VALUE
 rb_cogl_texture_get_format (VALUE self)
 {
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
+  CoglHandle tex = rb_cogl_handle_get_handle (self);
 
   return UINT2NUM (cogl_texture_get_format (tex));
 }
@@ -164,7 +158,7 @@ rb_cogl_texture_get_format (VALUE self)
 static VALUE
 rb_cogl_texture_get_rowstride (VALUE self)
 {
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
+  CoglHandle tex = rb_cogl_handle_get_handle (self);
 
   return UINT2NUM (cogl_texture_get_rowstride (tex));
 }
@@ -172,7 +166,7 @@ rb_cogl_texture_get_rowstride (VALUE self)
 static VALUE
 rb_cogl_texture_get_max_waste (VALUE self)
 {
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
+  CoglHandle tex = rb_cogl_handle_get_handle (self);
 
   return INT2NUM (cogl_texture_get_max_waste (tex));
 }
@@ -180,7 +174,7 @@ rb_cogl_texture_get_max_waste (VALUE self)
 static VALUE
 rb_cogl_texture_is_sliced (VALUE self)
 {
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
+  CoglHandle tex = rb_cogl_handle_get_handle (self);
 
   return cogl_texture_is_sliced (tex) ? Qtrue : Qfalse;
 }
@@ -188,7 +182,7 @@ rb_cogl_texture_is_sliced (VALUE self)
 static VALUE
 rb_cogl_texture_get_data (int argc, VALUE *argv, VALUE self)
 {
-  CoglHandle tex = rb_cogl_texture_get_handle (self);
+  CoglHandle tex = rb_cogl_handle_get_handle (self);
   VALUE format_arg, rowstride_arg;
   CoglPixelFormat format;
   guint rowstride;
@@ -230,7 +224,7 @@ rb_cogl_texture_set_region (VALUE self, VALUE src_x, VALUE src_y,
   if (RSTRING_LEN (data_arg) < height * rowstride)
     rb_raise (rb_eArgError, "data string too short");
 
-  if (!cogl_texture_set_region (rb_cogl_texture_get_handle (self),
+  if (!cogl_texture_set_region (rb_cogl_handle_get_handle (self),
                                 NUM2INT (src_x), NUM2INT (src_y),
                                 NUM2INT (dst_x), NUM2INT (dst_y),
                                 NUM2UINT (dst_width), NUM2UINT (dst_height),
@@ -246,8 +240,9 @@ rb_cogl_texture_set_region (VALUE self, VALUE src_x, VALUE src_y,
 void
 rb_cogl_texture_init ()
 {
-  VALUE klass = G_DEF_CLASS (COGL_TYPE_HANDLE, "Texture",
-                             rbclt_c_cogl);
+  VALUE klass = rb_define_class_under (rbclt_c_cogl,
+                                       "Texture",
+                                       rb_c_cogl_handle);
   rb_c_cogl_texture = klass;
 
   rb_c_cogl_texture_error = rb_define_class_under (klass, "Error",
