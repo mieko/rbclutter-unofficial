@@ -28,4 +28,7 @@ VALUE rb_cogl_matrix_alloc (void);
 
 CoglMatrix *rb_cogl_matrix_get_pointer (VALUE self);
 
+gboolean rb_cogl_is_kind_of_matrix (VALUE self);
+void rb_cogl_assert_is_kind_of_matrix (VALUE arg);
+
 #endif /* _RB_COGL_MATRIX_H */

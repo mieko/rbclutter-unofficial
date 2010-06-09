@@ -94,13 +94,13 @@ rb_cogl_matrix_initialize (int argc, VALUE *argv, VALUE self)
   return Qnil;
 }
 
-static gboolean
+gboolean
 rb_cogl_is_kind_of_matrix (VALUE self)
 {
   return TYPE (self) == T_DATA && RDATA (self)->dfree == rb_cogl_matrix_free;
 }
 
-static void
+void
 rb_cogl_assert_is_kind_of_matrix (VALUE arg)
 {
   if (!rb_cogl_is_kind_of_matrix (arg))
