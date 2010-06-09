@@ -24,7 +24,6 @@
 #include "rbclutter.h"
 #include "rbcoglhandle.h"
 
-VALUE rb_c_cogl_offscreen;
 static VALUE rb_c_cogl_offscreen_error;
 
 static VALUE
@@ -49,9 +48,7 @@ rb_cogl_offscreen_initialize (VALUE self, VALUE tex)
 void
 rb_cogl_offscreen_init ()
 {
-  VALUE klass = rb_define_class_under (rbclt_c_cogl, "Offscreen",
-                                       rb_c_cogl_handle);
-  rb_c_cogl_offscreen = klass;
+  VALUE klass = rb_cogl_define_handle (cogl_is_offscreen, "Offscreen");
 
   rb_c_cogl_offscreen_error = rb_define_class_under (klass, "Error",
                                                      rb_eStandardError);

@@ -23,9 +23,6 @@
 #include "rbclutter.h"
 #include "rbcoglhandle.h"
 #include "rbcoglshader.h"
-#include "rbcoglprogram.h"
-
-VALUE rb_c_cogl_program;
 
 static VALUE
 rb_cogl_program_initialize (VALUE self)
@@ -92,9 +89,7 @@ rb_cogl_program_uniform (VALUE self, VALUE uniform_no, VALUE value)
 void
 rb_cogl_program_init ()
 {
-  VALUE klass = rb_define_class_under (rbclt_c_cogl, "Program",
-                                       rb_c_cogl_handle);
-  rb_c_cogl_program = klass;
+  VALUE klass = rb_cogl_define_handle (cogl_is_program, "Program");
 
   rb_define_method (klass, "initialize", rb_cogl_program_initialize, 0);
   rb_define_method (klass, "attach_shader", rb_cogl_program_attach_shader, 1);

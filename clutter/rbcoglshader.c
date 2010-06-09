@@ -73,8 +73,7 @@ rb_cogl_shader_get_info_log (VALUE self)
 void
 rb_cogl_shader_init ()
 {
-  VALUE klass = rb_define_class_under (rbclt_c_cogl, "Shader",
-                                       rb_c_cogl_handle);
+  VALUE klass = rb_cogl_define_handle (cogl_is_shader, "Shader");
   rb_c_cogl_shader = klass;
 
   rb_define_method (klass, "initialize", rb_cogl_shader_initialize, 1);

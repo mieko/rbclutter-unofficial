@@ -24,9 +24,7 @@
 
 #include "rbclutter.h"
 #include "rbcoglhandle.h"
-#include "rbcogltexture.h"
 
-VALUE rb_c_cogl_texture;
 static VALUE rb_c_cogl_texture_error;
 
 typedef struct _PolygonData PolygonData;
@@ -240,10 +238,7 @@ rb_cogl_texture_set_region (VALUE self, VALUE src_x, VALUE src_y,
 void
 rb_cogl_texture_init ()
 {
-  VALUE klass = rb_define_class_under (rbclt_c_cogl,
-                                       "Texture",
-                                       rb_c_cogl_handle);
-  rb_c_cogl_texture = klass;
+  VALUE klass = rb_cogl_define_handle (cogl_is_texture, "Texture");
 
   rb_c_cogl_texture_error = rb_define_class_under (klass, "Error",
                                                    rb_eStandardError);

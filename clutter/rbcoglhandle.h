@@ -21,13 +21,19 @@
 #define _RBCOGL_HANDLE_H
 
 #include <cogl/cogl.h>
+#include <ruby.h>
 
 extern VALUE rb_c_cogl_handle;
+
+typedef gboolean (* RBCoglHandleTypeCheckFunc) (CoglHandle handle);
 
 void rb_cogl_handle_initialize (VALUE self, CoglHandle handle);
 VALUE rb_cogl_handle_to_value (CoglHandle handle);
 VALUE rb_cogl_handle_to_value_unref (CoglHandle handle);
 
 CoglHandle rb_cogl_handle_get_handle (VALUE obj);
+
+VALUE rb_cogl_define_handle (RBCoglHandleTypeCheckFunc type_check,
+                             const char *class_name);
 
 #endif /* _RBCOGL_HANDLE_H */

@@ -23,12 +23,18 @@
 
 #include "rbclutter.h"
 #include "rbcoglhandle.h"
-#include "rbcogltexture.h"
-#include "rbcogloffscreen.h"
-#include "rbcoglprogram.h"
-#include "rbcoglshader.h"
 
 VALUE rb_c_cogl_handle;
+
+static GSList *rb_cogl_handle_types = NULL;
+
+typedef struct _RBCoglHandleType RBCoglHandleType;
+
+struct _RBCoglHandleType
+{
+  RBCoglHandleTypeCheckFunc type_check;
+  VALUE klass;
+};
 
 void
 rb_cogl_handle_initialize (VALUE self, CoglHandle handle)
@@ -46,18 +52,19 @@ rb_cogl_handle_to_value (CoglHandle handle)
     ret = Qnil;
   else
     {
-      VALUE klass;
+      GSList *l;
+      VALUE klass = rb_c_cogl_handle;;
 
-      if (cogl_is_texture (handle))
-        klass = rb_c_cogl_texture;
-      else if (cogl_is_offscreen (handle))
-        klass = rb_c_cogl_offscreen;
-      else if (cogl_is_program (handle))
-        klass = rb_c_cogl_program;
-      else if (cogl_is_shader (handle))
-        klass = rb_c_cogl_shader;
-      else
-        klass = rb_c_cogl_handle;
+      for (l = rb_cogl_handle_types; l; l = l->next)
+        {
+          RBCoglHandleType *type = l->data;
+
+          if (type->type_check (handle))
+            {
+              klass = type->klass;
+              break;
+            }
+        }
 
       ret = BOXED2RVAL (handle, COGL_TYPE_HANDLE);
       /* This is copied from rbgdkevent.c and where it is commented as a hack */
@@ -102,4 +109,19 @@ rb_cogl_handle_init ()
   rb_c_cogl_handle = klass;
 
   rbgobj_register_g2r_func (COGL_TYPE_HANDLE, rb_cogl_handle_g2r);
+}
+
+VALUE
+rb_cogl_define_handle (RBCoglHandleTypeCheckFunc type_check,
+                       const char *class_name)
+{
+  RBCoglHandleType *type = g_slice_new (RBCoglHandleType);
+
+  type->type_check = type_check;
+  type->klass = rb_define_class_under (rbclt_c_cogl, class_name,
+                                       rb_c_cogl_handle);
+
+  rb_cogl_handle_types = g_slist_prepend (rb_cogl_handle_types, type);
+
+  return type->klass;
 }
