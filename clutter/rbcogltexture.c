@@ -25,19 +25,10 @@
 #include "rbclutter.h"
 #include "rbcoglhandle.h"
 #include "rbcogltexture.h"
+#include "rbcoglbitmap.h"
 
 VALUE rb_c_cogl_texture;
 static VALUE rb_c_cogl_texture_error;
-
-typedef struct _PolygonData PolygonData;
-
-struct _PolygonData
-{
-  int argc;
-  VALUE *argv;
-  VALUE self;
-  CoglTextureVertex *vertices;
-};
 
 static int
 rb_cogl_texture_get_format_bpp (CoglPixelFormat format)
@@ -65,12 +56,24 @@ rb_cogl_texture_get_format_bpp (CoglPixelFormat format)
 }
 
 static VALUE
-rb_cogl_texture_initialize (int argc, VALUE *argv, VALUE self)
+rb_cogl_texture_initialize (int argc, VALUE *argv_in, VALUE self)
 {
   GError *error = NULL;
   CoglHandle tex = COGL_INVALID_HANDLE;
+  VALUE argv[7];
+  int i;
 
-  if (argc >= 2 && argc <= 4 && FIXNUM_P (argv[0]) && FIXNUM_P (argv[1]))
+  if (argc > G_N_ELEMENTS (argv))
+    rb_raise (rb_eArgError, "Too many arguments given");
+
+  for (i = 0; i < argc; i++)
+    argv[i] = argv_in[i];
+  for (; i < G_N_ELEMENTS (argv); i++)
+    argv[i] = Qnil;
+
+  if (argc >= 2 && argc <= 4
+      && rb_obj_is_kind_of (argv[0], rb_cNumeric)
+      && rb_obj_is_kind_of (argv[1], rb_cNumeric))
     tex = cogl_texture_new_with_size (NUM2UINT (argv[0]),
                                       NUM2UINT (argv[1]),
                                       NIL_P (argv[2])
@@ -81,6 +84,25 @@ rb_cogl_texture_initialize (int argc, VALUE *argv, VALUE self)
                                       ? COGL_PIXEL_FORMAT_ANY
                                       : RVAL2GENUM (argv[2],
                                                     COGL_TYPE_PIXEL_FORMAT));
+  else if (rb_obj_is_kind_of (argv[0], rb_c_cogl_bitmap))
+    tex = cogl_texture_new_from_bitmap (rb_cogl_handle_get_handle (argv[0]),
+                                        NIL_P (argv[1])
+                                        ? COGL_TEXTURE_NONE
+                                        : RVAL2GFLAGS (argv[1],
+                                                       COGL_TYPE_TEXTURE_FLAGS),
+                                        NIL_P (argv[2])
+                                        ? COGL_PIXEL_FORMAT_ANY
+                                        : RVAL2GENUM (argv[2],
+                                                      COGL_TYPE_PIXEL_FORMAT));
+  else if (argc == 5 && rb_obj_is_kind_of (argv[0], rb_c_cogl_texture))
+    {
+      CoglHandle handle = rb_cogl_handle_get_handle (argv[0]);
+      tex = cogl_texture_new_from_sub_texture (handle,
+                                               NUM2INT (argv[1]),
+                                               NUM2INT (argv[2]),
+                                               NUM2INT (argv[3]),
+                                               NUM2INT (argv[4]));
+    }
   else if (argc >= 1 && argc <= 3)
     tex = cogl_texture_new_from_file (StringValuePtr (argv[0]),
                                       NIL_P (argv[1])
@@ -92,14 +114,17 @@ rb_cogl_texture_initialize (int argc, VALUE *argv, VALUE self)
                                       : RVAL2GENUM (argv[2],
                                                     COGL_TYPE_PIXEL_FORMAT),
                                       &error);
-  else if (argc == 7)
+  else if (argc == 7 && rb_obj_is_kind_of (argv[6], rb_cString))
     {
       guint width = NUM2UINT (argv[0]);
       guint height = NUM2UINT (argv[1]);
-      CoglTextureFlags flags = RVAL2GFLAGS (argv[2], COGL_TYPE_TEXTURE_FLAGS);
+      CoglTextureFlags flags
+        = (NIL_P (argv[2]) ? COGL_TEXTURE_NONE
+           : RVAL2GFLAGS (argv[2], COGL_TYPE_TEXTURE_FLAGS));
       CoglPixelFormat format = RVAL2GENUM (argv[3], COGL_TYPE_PIXEL_FORMAT);
-      CoglPixelFormat internal_format = RVAL2GENUM (argv[4],
-                                                    COGL_TYPE_PIXEL_FORMAT);
+      CoglPixelFormat internal_format
+        = (NIL_P (argv[4]) ? COGL_PIXEL_FORMAT_ANY
+           : RVAL2GENUM (argv[4], COGL_TYPE_PIXEL_FORMAT));
       unsigned int rowstride;
       const char *data = StringValuePtr (argv[6]);
 
@@ -117,6 +142,17 @@ rb_cogl_texture_initialize (int argc, VALUE *argv, VALUE self)
                                         internal_format,
                                         rowstride,
                                         (const guchar *) data);
+    }
+  else if (argc == 7) /* assume new from foreign if last arg is not a string */
+    {
+      CoglPixelFormat format = RVAL2GENUM (argv[6], COGL_TYPE_PIXEL_FORMAT);
+      tex = cogl_texture_new_from_foreign (NUM2UINT (argv[0]),
+                                           NUM2INT (argv[1]),
+                                           NUM2UINT (argv[2]),
+                                           NUM2UINT (argv[3]),
+                                           NUM2UINT (argv[4]),
+                                           NUM2UINT (argv[5]),
+                                           format);
     }
   else
     rb_raise (rb_eArgError, "wrong number of arguments");
@@ -152,7 +188,8 @@ rb_cogl_texture_get_format (VALUE self)
 {
   CoglHandle tex = rb_cogl_handle_get_handle (self);
 
-  return UINT2NUM (cogl_texture_get_format (tex));
+  return GENUM2RVAL (cogl_texture_get_format (tex),
+                     COGL_TYPE_PIXEL_FORMAT);
 }
 
 static VALUE
@@ -237,6 +274,18 @@ rb_cogl_texture_set_region (VALUE self, VALUE src_x, VALUE src_y,
   return self;
 }
 
+static VALUE
+rb_cogl_texture_get_gl_texture (VALUE self)
+{
+  CoglHandle tex = rb_cogl_handle_get_handle (self);
+  GLuint gl_handle;
+  GLenum gl_target;
+
+  cogl_texture_get_gl_texture (tex, &gl_handle, &gl_target);
+
+  return rb_ary_new3 (2, UINT2NUM (gl_handle), INT2NUM (gl_target));
+}
+
 void
 rb_cogl_texture_init ()
 {
@@ -246,6 +295,9 @@ rb_cogl_texture_init ()
 
   rb_c_cogl_texture_error = rb_define_class_under (klass, "Error",
                                                    rb_eStandardError);
+
+  G_DEF_CLASS (COGL_TYPE_TEXTURE_FLAGS, "Flags", klass);
+  G_DEF_CONSTANTS (klass, COGL_TYPE_TEXTURE_FLAGS, "COGL_TEXTURE_");
 
   rb_define_method (klass, "initialize", rb_cogl_texture_initialize, -1);
   rb_define_method (klass, "width", rb_cogl_texture_get_width, 0);
@@ -258,6 +310,7 @@ rb_cogl_texture_init ()
   rb_define_alias (klass, "data", "get_data");
   rb_define_method (klass, "set_region",
                     rb_cogl_texture_set_region, 11);
+  rb_define_method (klass, "gl_texture", rb_cogl_texture_get_gl_texture, 0);
 
   G_DEF_SETTERS (klass);
 }

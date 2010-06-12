@@ -147,6 +147,8 @@ rb_cogl_init ()
 {
   rbclt_c_cogl = rb_define_module ("Cogl");
 
+  G_DEF_CLASS (COGL_TYPE_PIXEL_FORMAT, "PixelFormat", rbclt_c_cogl);
+
   rb_define_singleton_method (rbclt_c_cogl, "get_features",
                               rb_cogl_get_features, 0);
   rb_define_singleton_method (rbclt_c_cogl, "features_available?",
