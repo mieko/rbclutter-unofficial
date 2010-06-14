@@ -258,6 +258,8 @@ rb_cogl_material_set_layer_filters (VALUE self,
   return self;
 }
 
+#if CLUTTER_CHECK_VERSION(1, 3, 2)
+
 static VALUE
 rb_cogl_material_set_layer_wrap_mode (VALUE self,
                                       VALUE layer_num,
@@ -301,6 +303,24 @@ rb_cogl_material_set_layer_wrap_mode_t (VALUE self,
 }
 
 static VALUE
+rb_cogl_material_layer_get_wrap_mode_s (VALUE self)
+{
+  CoglHandle layer = rb_cogl_handle_get_handle (self);
+  return GENUM2RVAL (cogl_material_layer_get_wrap_mode_s (layer),
+                     COGL_TYPE_MATERIAL_WRAP_MODE);
+}
+
+static VALUE
+rb_cogl_material_layer_get_wrap_mode_t (VALUE self)
+{
+  CoglHandle layer = rb_cogl_handle_get_handle (self);
+  return GENUM2RVAL (cogl_material_layer_get_wrap_mode_t (layer),
+                     COGL_TYPE_MATERIAL_WRAP_MODE);
+}
+
+#endif /* CLUTTER_CHECK_VERSION(1, 3, 2) */
+
+static VALUE
 rb_cogl_material_layer_get_type (VALUE self)
 {
   CoglHandle layer = rb_cogl_handle_get_handle (self);
@@ -329,22 +349,6 @@ rb_cogl_material_layer_get_mag_filter (VALUE self)
   CoglHandle layer = rb_cogl_handle_get_handle (self);
   return GENUM2RVAL (cogl_material_layer_get_mag_filter (layer),
                      COGL_TYPE_MATERIAL_FILTER);
-}
-
-static VALUE
-rb_cogl_material_layer_get_wrap_mode_s (VALUE self)
-{
-  CoglHandle layer = rb_cogl_handle_get_handle (self);
-  return GENUM2RVAL (cogl_material_layer_get_wrap_mode_s (layer),
-                     COGL_TYPE_MATERIAL_WRAP_MODE);
-}
-
-static VALUE
-rb_cogl_material_layer_get_wrap_mode_t (VALUE self)
-{
-  CoglHandle layer = rb_cogl_handle_get_handle (self);
-  return GENUM2RVAL (cogl_material_layer_get_wrap_mode_t (layer),
-                     COGL_TYPE_MATERIAL_WRAP_MODE);
 }
 
 #define RB_COGL_MATERIAL_COLOR_WRITER_FUNC(prop)                \
@@ -408,9 +412,6 @@ rb_cogl_material_init ()
   G_DEF_CLASS (COGL_TYPE_MATERIAL_FILTER, "Filter", klass);
   G_DEF_CONSTANTS (klass, COGL_TYPE_MATERIAL_FILTER, "COGL_MATERIAL_");
 
-  G_DEF_CLASS (COGL_TYPE_MATERIAL_WRAP_MODE, "WrapMode", klass);
-  G_DEF_CONSTANTS (klass, COGL_TYPE_MATERIAL_WRAP_MODE, "COGL_MATERIAL_");
-
   G_DEF_CLASS (COGL_TYPE_MATERIAL_ALPHA_FUNC, "AlphaFunc", klass);
   G_DEF_CONSTANTS (klass, COGL_TYPE_MATERIAL_ALPHA_FUNC, "COGL_MATERIAL_");
 
@@ -443,12 +444,6 @@ rb_cogl_material_init ()
   rb_define_method (klass, "set_layer_filters",
                     rb_cogl_material_set_layer_filters, 3);
 
-  rb_define_method (klass, "set_layer_wrap_mode",
-                    rb_cogl_material_set_layer_wrap_mode, 2);
-  rb_define_method (klass, "set_layer_wrap_mode_s",
-                    rb_cogl_material_set_layer_wrap_mode_s, 2);
-  rb_define_method (klass, "set_layer_wrap_mode_t",
-                    rb_cogl_material_set_layer_wrap_mode_t, 2);
 
   RB_COGL_MATERIAL_COLOR_ACCESSOR (color);
   RB_COGL_MATERIAL_COLOR_ACCESSOR (ambient);
@@ -471,10 +466,25 @@ rb_cogl_material_init ()
                     rb_cogl_material_layer_get_min_filter, 0);
   rb_define_method (klass, "mag_filter",
                     rb_cogl_material_layer_get_mag_filter, 0);
+
+#if CLUTTER_CHECK_VERSION(1, 3, 2)
+
+  G_DEF_CLASS (COGL_TYPE_MATERIAL_WRAP_MODE, "WrapMode", klass);
+  G_DEF_CONSTANTS (klass, COGL_TYPE_MATERIAL_WRAP_MODE, "COGL_MATERIAL_");
+
+  rb_define_method (klass, "set_layer_wrap_mode",
+                    rb_cogl_material_set_layer_wrap_mode, 2);
+  rb_define_method (klass, "set_layer_wrap_mode_s",
+                    rb_cogl_material_set_layer_wrap_mode_s, 2);
+  rb_define_method (klass, "set_layer_wrap_mode_t",
+                    rb_cogl_material_set_layer_wrap_mode_t, 2);
+
   rb_define_method (klass, "wrap_mode_s",
                     rb_cogl_material_layer_get_wrap_mode_s, 0);
   rb_define_method (klass, "wrap_mode_t",
                     rb_cogl_material_layer_get_wrap_mode_t, 0);
+
+#endif /* CLUTTER_CHECK_VERSION(1, 3, 2) */
 
   G_DEF_CLASS (COGL_TYPE_MATERIAL_LAYER_TYPE, "Type", klass);
   G_DEF_CONSTANTS (klass, COGL_TYPE_MATERIAL_LAYER_TYPE,
