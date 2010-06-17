@@ -2,6 +2,7 @@
 
 # Ruby bindings for the Clutter 'interactive canvas' library.
 # Copyright (C) 2007  Neil Roberts
+# Copyright (C) 2010  Intel Corporation
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -24,7 +25,7 @@ def show_fail
   exit(1)
 end
 
-SUBDIRS = %w{ clutter clutter-gtk clutter-gst }
+SUBDIRS = %w{ clutter clutter-gtk clutter-gst clutter-ply }
 
 cwd = Pathname.getwd
 

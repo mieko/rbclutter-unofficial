@@ -21,4 +21,7 @@
 /clutter-gtk/clutter_gtk.so
 /clutter-gtk/Makefile
 /clutter-gtk/mkmf.log
+/clutter-ply/Makefile
+/clutter-ply/mkmf.log
+/clutter-ply/clutter_ply.so
 /Makefile
