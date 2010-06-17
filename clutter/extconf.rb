@@ -37,7 +37,7 @@ $objs = %w{ rbclutter.o rbcltactor.o rbcltalpha.o rbcltbehaviour.o rbcltbehaviou
 + %w{ rbcltmedia.o rbcltshader.o rbcltcallbackfunc.o rbcltframesource.o } \
 + %w{ rbcltstagemanager.o rbcltchildmeta.o rbcltscript.o rbcltscore.o } \
 + %w{ rbcltlistmodel.o rbcltmodel.o rbcltpath.o rbcltcairotexture.o } \
-+ %w{ rbcltinterval.o rbcltanimation.o }
++ %w{ rbcltinterval.o rbcltanimation.o rbclttext.o }
 
 $objs += %w{ rbcogl.o rbcogltexture.o rbcoglprimitives.o } \
 + %w{ rbcoglshader.o rbcoglprogram.o rbcogloffscreen.o rbcoglmatrix.o } \
