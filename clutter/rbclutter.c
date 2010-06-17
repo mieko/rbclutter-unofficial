@@ -28,6 +28,7 @@
 VALUE rbclt_c_clutter = Qnil;
 VALUE rbclt_c_clutter_error = Qnil;
 static VALUE rbclt_c_clutter_init_error = Qnil;
+static ID id_ord;
 
 extern void rbclt_main_init ();
 extern void rbclt_actor_init ();
@@ -183,6 +184,17 @@ rbclt_num_to_guint16 (VALUE val)
             num, s);
 }
 
+gunichar
+rbclt_num_to_gunichar (VALUE ch)
+{
+  /* In Ruby 1.9 characters are represented as short strings so we
+     should accept those as well */
+  if (rb_respond_to (ch, id_ord))
+    ch = rb_funcall (ch, id_ord, 0);
+
+  return NUM2UINT (ch);
+}
+
 void
 rbclt_initialize_unowned (VALUE obj, gpointer gobj)
 {
@@ -278,6 +290,8 @@ Init_clutter ()
   G_DEF_CLASS (CLUTTER_TYPE_INIT_ERROR, "Code", rbclt_c_clutter_init_error);
   G_DEF_CONSTANTS (rbclt_c_clutter_init_error, CLUTTER_TYPE_INIT_ERROR,
                    "CLUTTER_INIT_");
+
+  id_ord = rb_intern ("ord");
 
   rbclt_main_init ();
   rbclt_actor_init ();

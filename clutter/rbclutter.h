@@ -36,6 +36,7 @@ void rbclt_initialize_unowned (VALUE obj, gpointer gobj);
 guint8 rbclt_num_to_guint8 (VALUE val);
 guint16 rbclt_num_to_guint16 (VALUE val);
 GType rbclt_connect_flags_get_type (void) G_GNUC_CONST;
+gunichar rbclt_num_to_gunichar (VALUE ch);
 
 typedef ClutterInitError (* RBCLTInitFunc) (int *argc, char ***argv);
 
