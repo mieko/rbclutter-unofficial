@@ -235,8 +235,8 @@ rb_cogl_vertex_buffer_submit (VALUE self)
           add_data[i].stride = rbclt_num_to_guint16 (entry_values[4]);
           add_data[i].data = convert_to_string (entry_values[5],
                                                 add_data[i].type,
-                                                add_data[i].stride,
-                                                add_data[i].n_components);
+                                                add_data[i].n_components,
+                                                add_data[i].stride);
           add_data[i].offset = (NIL_P (entry_values[6]) ? 0
                                 : NUM2UINT (entry_values[6]));
         }
