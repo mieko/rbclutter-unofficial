@@ -94,7 +94,7 @@ class Thumbnailer
                              "x" => @start_x,
                              "y" => @start_y)
         anim.signal_connect_after("completed") do
-          animate_out_completed_cb(actor)
+          animate_out_completed_cb(anim.object)
         end
       end
     else

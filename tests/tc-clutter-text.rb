@@ -94,7 +94,7 @@ class TC_ClutterText < Test::Unit::TestCase
   end
 
   def test_layout
-    assert_kind_of(@text.layout, Pango::Layout)
+    assert_kind_of(Pango::Layout, @text.layout)
     assert_equal(@text.layout.text, @text.text)
   end
 
@@ -139,10 +139,14 @@ class TC_ClutterText < Test::Unit::TestCase
   end
 
   def test_insert_unichar
-    assert_equal(@text.insert_unichar(?(), @text)
-    assert_equal(@text.insert_unichar(")"), @text)
-    assert_equal(@text << ?., @text)
-    assert_equal(@text.text, "123456789().")
+    assert_equal(@text.insert_unichar(?\(), @text)
+    # Under Ruby 1.8, insert_unichar doesn't accept 1-character strings
+    if ")".respond_to?(:ord)
+      assert_equal(@text.insert_unichar(")"), @text)
+    else
+      assert_equal(@text.insert_unichar(?\)), @text)
+    end
+    assert_equal(@text.text, "123456789()")
   end
 
   def test_delete_chars
@@ -154,7 +158,8 @@ class TC_ClutterText < Test::Unit::TestCase
     assert_equal(@text.insert_text("()"), @text)
     assert_equal(@text.insert_text("[]", 0), @text)
     assert_equal(@text.insert_text("--", 3), @text)
-    assert_equal(@text.text, "[]1--23456789()")
+    assert_equal(@text << ".", @text)
+    assert_equal(@text.text, "[]1--23456789().")
   end
 
   def test_delete_text
@@ -263,7 +268,7 @@ class TC_ClutterText < Test::Unit::TestCase
 
   def test_position_to_coords
     assert_equal(@text.position_to_coords(1000), nil)
-    assert_kind_of(@text.position_to_coords(0), Array)
+    assert_kind_of(Array, @text.position_to_coords(0))
     assert_equal(@text.position_to_coords(0).length, 3)
   end
 

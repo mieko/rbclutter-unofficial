@@ -19,6 +19,7 @@
 
 #include <rbgobject.h>
 #include <clutter/clutter.h>
+#include <st.h>
 
 #include "rbclutter.h"
 #include "rbcltactor.h"

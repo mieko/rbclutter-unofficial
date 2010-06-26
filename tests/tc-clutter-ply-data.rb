@@ -38,7 +38,7 @@ class TC_ClutterPlyData < Test::Unit::TestCase
 
   def test_extents
     @data.load(CUBE_PLY)
-    assert_kind_of(@data.extents, Array)
+    assert_kind_of(Array, @data.extents)
     assert_equal(@data.extents.length, 2)
     check_vertex_equal(@data.extents[0],
                        Clutter::Vertex.new(-1, -1, -1))

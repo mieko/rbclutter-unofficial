@@ -17,8 +17,8 @@ class TC_ClutterPlyModel < Test::Unit::TestCase
   end
 
   def test_new_from_file
-    assert_kind_of(Clutter::Ply::Model.new(CUBE_PLY),
-                   Clutter::Ply::Model)
+    assert_kind_of(Clutter::Ply::Model,
+                   Clutter::Ply::Model.new(CUBE_PLY))
   end
 
   def test_new_from_file_fail
@@ -30,13 +30,13 @@ class TC_ClutterPlyModel < Test::Unit::TestCase
   def test_material
     material = Cogl::Material.new
     # We can't compare materials to decide if it's the same object
-    assert_kind_of(@model.material, Cogl::Material)
-    assert_kind_of(@model.material = material, Cogl::Material)
+    assert_kind_of(Cogl::Material, @model.material)
+    assert_kind_of(Cogl::Material, @model.material = material)
     assert_equal(@model.set_material(material), @model)
   end
 
   def test_data
-    assert_kind_of(@model.data, Clutter::Ply::Data)
+    assert_kind_of(Clutter::Ply::Data, @model.data)
     data = Clutter::Ply::Data.new
     assert_equal(@model.data = data, data)
     assert_equal(@model.set_data(data), @model)

@@ -32,7 +32,7 @@ class TC_CoglTextureMethods < Test::Unit::TestCase
 
   def test_format
     assert_equal(@tex.format, Cogl::PixelFormat::RGBA_8888_PRE)
-    assert_kind_of(@tex.format, Cogl::PixelFormat)
+    assert_kind_of(Cogl::PixelFormat, @tex.format)
   end
 
   def test_rowstride
@@ -49,9 +49,9 @@ class TC_CoglTextureMethods < Test::Unit::TestCase
 
   def test_gl_texture
     gl_texture = @tex.gl_texture
-    assert_kind_of(gl_texture, Array)
+    assert_kind_of(Array, gl_texture)
     assert_equal(gl_texture.length, 2)
-    gl_texture.each { |x| assert_kind_of(x, Fixnum) }
+    gl_texture.each { |x| assert_kind_of(Fixnum, x) }
   end
 
   def check_tex_data(data)
@@ -154,7 +154,8 @@ class TC_CoglTextureConstructors < Test::Unit::TestCase
   def test_foreign
     red_tex = Cogl::Texture.new(RED_TEX,
                                 Cogl::Texture::NO_ATLAS)
-    foreign_tex = Cogl::Texture.new(*red_tex.gl_texture,
+    foreign_tex = Cogl::Texture.new(red_tex.gl_texture[0],
+                                    red_tex.gl_texture[1],
                                     RED_TEX_WIDTH,
                                     RED_TEX_HEIGHT,
                                     0, 0,

@@ -157,23 +157,23 @@ convert_to_string (VALUE arg,
       switch (type)
         {
         case COGL_ATTRIBUTE_TYPE_BYTE:
-          pack_type = rb_str_new_cstr ("c*");
+          pack_type = rb_str_new2 ("c*");
           break;
 
         case COGL_ATTRIBUTE_TYPE_UNSIGNED_BYTE:
-          pack_type = rb_str_new_cstr ("C*");
+          pack_type = rb_str_new2 ("C*");
           break;
 
         case COGL_ATTRIBUTE_TYPE_SHORT:
-          pack_type = rb_str_new_cstr ("s*");
+          pack_type = rb_str_new2 ("s*");
           break;
 
         case COGL_ATTRIBUTE_TYPE_UNSIGNED_SHORT:
-          pack_type = rb_str_new_cstr ("S*");
+          pack_type = rb_str_new2 ("S*");
           break;
 
         case COGL_ATTRIBUTE_TYPE_FLOAT:
-          pack_type = rb_str_new_cstr ("f*");
+          pack_type = rb_str_new2 ("f*");
           break;
         }
 
