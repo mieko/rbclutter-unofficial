@@ -27,6 +27,7 @@
 #include "rbcogltexture.h"
 #include "rbcoglmatrix.h"
 
+static VALUE rb_c_cogl_vertex_buffer_indices;
 static ID id_to_add_array;
 static ID id_to_delete_array;
 static ID id_pack;
@@ -374,6 +375,121 @@ rb_cogl_vertex_buffer_draw (int argc, VALUE *argv, VALUE self)
   return self;
 }
 
+static int
+indices_type_size (CoglIndicesType type)
+{
+  switch (type)
+    {
+    case COGL_INDICES_TYPE_UNSIGNED_BYTE:
+      return sizeof (guint8);
+
+    case COGL_INDICES_TYPE_UNSIGNED_SHORT:
+      return sizeof (guint16);
+
+    case COGL_INDICES_TYPE_UNSIGNED_INT:
+      return sizeof (guint32);
+    }
+
+  rb_raise (rb_eRuntimeError, "Invalid CoglIndicesType");
+
+  return 1;
+}
+
+static VALUE
+rb_cogl_vertex_buffer_indices_initialize (VALUE self,
+                                          VALUE type_arg,
+                                          VALUE array)
+{
+  CoglIndicesType type = RVAL2GENUM (type_arg, COGL_TYPE_INDICES_TYPE);
+  int type_size = indices_type_size (type);
+  CoglHandle indices;
+  VALUE str;
+
+  /* We can accept an array or something that can be converted into a
+     string */
+  if (TYPE (array) == T_ARRAY)
+    {
+      VALUE pack_type = Qnil;
+
+      switch (type)
+        {
+        case COGL_INDICES_TYPE_UNSIGNED_BYTE:
+          pack_type = rb_str_new2 ("C*");
+          break;
+
+        case COGL_INDICES_TYPE_UNSIGNED_SHORT:
+          pack_type = rb_str_new2 ("S*");
+          break;
+
+        case COGL_INDICES_TYPE_UNSIGNED_INT:
+          pack_type = rb_str_new2 ("I*");
+          break;
+        }
+
+      str = rb_funcall (array, id_pack, 1, pack_type);
+
+      if (TYPE (str) != T_STRING)
+        rb_raise (rb_eRuntimeError, "Internal error");
+    }
+  else
+    {
+      str = array;
+      StringValue (str);
+    }
+
+  indices = cogl_vertex_buffer_indices_new (type,
+                                            RSTRING_PTR (str),
+                                            RSTRING_LEN (str)
+                                            / type_size);
+  rb_cogl_handle_initialize (self, indices);
+
+  /* This is needed because there is no
+     cogl_vertex_buffer_indices_get_type so we can't use
+     rb_cogl_define_handle */
+  RBASIC (self)->klass = rb_c_cogl_vertex_buffer_indices;
+
+  return Qnil;
+}
+
+static VALUE
+rb_cogl_vertex_buffer_indices_get_for_quads (VALUE self,
+                                             VALUE n_indices)
+{
+  CoglHandle indices;
+
+  indices = cogl_vertex_buffer_indices_get_for_quads (NUM2UINT (n_indices));
+  self = rb_cogl_handle_to_value (indices);
+
+  /* This is needed because there is no
+     cogl_vertex_buffer_indices_get_type so we can't use
+     rb_cogl_define_handle */
+  RBASIC (self)->klass = rb_c_cogl_vertex_buffer_indices;
+
+  return self;
+}
+
+static VALUE
+rb_cogl_vertex_buffer_draw_elements (VALUE self,
+                                     VALUE mode,
+                                     VALUE indices,
+                                     VALUE min_index,
+                                     VALUE max_index,
+                                     VALUE offset,
+                                     VALUE count)
+{
+  CoglHandle vertex_buffer = rb_cogl_handle_get_handle (self);
+
+  cogl_vertex_buffer_draw_elements (vertex_buffer,
+                                    RVAL2GENUM (mode, COGL_TYPE_VERTICES_MODE),
+                                    rb_cogl_handle_get_handle (indices),
+                                    NUM2INT (min_index),
+                                    NUM2INT (max_index),
+                                    NUM2INT (offset),
+                                    NUM2INT (count));
+
+  return self;
+}
+
 void
 rb_cogl_vertex_buffer_init ()
 {
@@ -396,4 +512,16 @@ rb_cogl_vertex_buffer_init ()
   rb_define_method (klass, "enable", rb_cogl_vertex_buffer_enable, 1);
   rb_define_method (klass, "disable", rb_cogl_vertex_buffer_disable, 1);
   rb_define_method (klass, "draw", rb_cogl_vertex_buffer_draw, -1);
+  rb_define_method (klass, "draw_elements",
+                    rb_cogl_vertex_buffer_draw_elements, 6);
+
+  /* There's no cogl_is_vertex_buffer_indices function so we can't use
+     rb_cogl_define_handle */
+  klass = rb_define_class_under (klass, "Indices", rb_c_cogl_handle);
+  rb_c_cogl_vertex_buffer_indices = klass;
+
+  rb_define_method (klass, "initialize",
+                    rb_cogl_vertex_buffer_indices_initialize, 2);
+  rb_define_singleton_method (klass, "get_for_quads",
+                              rb_cogl_vertex_buffer_indices_get_for_quads, 1);
 }
