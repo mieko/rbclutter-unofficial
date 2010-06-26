@@ -228,7 +228,8 @@ rb_cogl_texture_get_data (int argc, VALUE *argv, VALUE self)
   rb_scan_args (argc, argv, "02", &format_arg, &rowstride_arg);
 
   format = NIL_P (format_arg)
-    ? cogl_texture_get_format (tex) : NUM2UINT (format_arg);
+    ? cogl_texture_get_format (tex)
+    : RVAL2GENUM (format_arg, COGL_TYPE_PIXEL_FORMAT);
   rowstride = (NIL_P (rowstride_arg) || NUM2UINT (rowstride_arg) == 0)
     ? cogl_texture_get_rowstride (tex) : NUM2UINT (rowstride_arg);
 
@@ -266,7 +267,7 @@ rb_cogl_texture_set_region (VALUE self, VALUE src_x, VALUE src_y,
                                 NUM2INT (dst_x), NUM2INT (dst_y),
                                 NUM2UINT (dst_width), NUM2UINT (dst_height),
                                 width, height,
-                                NUM2UINT (format),
+                                RVAL2GENUM (format, COGL_TYPE_PIXEL_FORMAT),
                                 rowstride,
                                 (const guchar *) data))
     rb_raise (rb_c_cogl_texture_error, "texture set region failed");
