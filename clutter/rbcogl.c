@@ -1,5 +1,6 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
  * Copyright (C) 2008  Neil Roberts
+ * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +22,7 @@
 #include <cogl/cogl.h>
 
 #include "rbclutter.h"
+#include "rbcoglhandle.h"
 
 extern void rb_cogl_consts_init (void);
 
@@ -142,6 +144,14 @@ rb_cogl_set_depth_test_enabled (VALUE self, VALUE v)
   return Qnil;
 }
 
+static VALUE
+rb_cogl_set_source (VALUE self, VALUE source)
+{
+  CoglHandle handle = rb_cogl_handle_get_handle (source);
+  cogl_set_source (handle);
+  return Qnil;
+}
+
 void
 rb_cogl_init ()
 {
@@ -175,4 +185,6 @@ rb_cogl_init ()
                               rb_cogl_get_viewport, 0);
   rb_define_singleton_method (rbclt_c_cogl, "set_depth_test_enabled",
                               rb_cogl_set_depth_test_enabled, 1);
+  rb_define_singleton_method (rbclt_c_cogl, "set_source",
+                              rb_cogl_set_source, 1);
 }
