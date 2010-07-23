@@ -1,15 +1,15 @@
 $:.unshift File.join(File.dirname(__FILE__), '..' , 'clutter')
-$:.unshift File.join(File.dirname(__FILE__), '..' , 'clutter-ply')
+$:.unshift File.join(File.dirname(__FILE__), '..' , 'mash')
 $:.unshift File.join(File.dirname(__FILE__))
 require 'clutter-init'
-require 'clutter_ply'
+require 'mash'
 require 'test/unit'
 
-class TC_ClutterPlyModel < Test::Unit::TestCase
+class TC_MashModel < Test::Unit::TestCase
   CUBE_PLY = File.join(File.dirname(__FILE__), 'cube.ply')
 
   def setup
-    @model = Clutter::Ply::Model.new(CUBE_PLY)
+    @model = Mash::Model.new(CUBE_PLY)
   end
 
   def teardown
@@ -17,13 +17,13 @@ class TC_ClutterPlyModel < Test::Unit::TestCase
   end
 
   def test_new_from_file
-    assert_kind_of(Clutter::Ply::Model,
-                   Clutter::Ply::Model.new(CUBE_PLY))
+    assert_kind_of(Mash::Model,
+                   Mash::Model.new(CUBE_PLY))
   end
 
   def test_new_from_file_fail
-    assert_raise(Clutter::Ply::Data::Error) do
-      Clutter::Ply::Model.new("/not/a/real/file/hopefully")
+    assert_raise(Mash::Data::Error) do
+      Mash::Model.new("/not/a/real/file/hopefully")
     end
   end
 
@@ -36,8 +36,8 @@ class TC_ClutterPlyModel < Test::Unit::TestCase
   end
 
   def test_data
-    assert_kind_of(Clutter::Ply::Data, @model.data)
-    data = Clutter::Ply::Data.new
+    assert_kind_of(Mash::Data, @model.data)
+    data = Mash::Data.new
     assert_equal(@model.data = data, data)
     assert_equal(@model.set_data(data), @model)
     assert_equal(@model.data, data)

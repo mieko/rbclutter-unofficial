@@ -18,13 +18,13 @@
  */
 
 #include <rbgobject.h>
-#include <clutter-ply/clutter-ply.h>
+#include <mash/mash.h>
 
 #include "rbclutter.h"
-#include "rbclutterply.h"
+#include "rbmash.h"
 
 static VALUE
-rbcltply_model_initialize (int argc, VALUE *argv, VALUE self)
+rbmash_model_initialize (int argc, VALUE *argv, VALUE self)
 {
   ClutterActor *model;
   VALUE filename;
@@ -32,12 +32,12 @@ rbcltply_model_initialize (int argc, VALUE *argv, VALUE self)
   rb_scan_args (argc, argv, "01", &filename);
 
   if (NIL_P (filename))
-    model = clutter_ply_model_new ();
+    model = mash_model_new ();
   else
     {
       GError *error = NULL;
-      model = clutter_ply_model_new_from_file (StringValuePtr (filename),
-                                               &error);
+      model = mash_model_new_from_file (StringValuePtr (filename),
+                                        &error);
       if (model == NULL)
         RAISE_GERROR (error);
     }
@@ -48,10 +48,10 @@ rbcltply_model_initialize (int argc, VALUE *argv, VALUE self)
 }
 
 void
-rbcltply_model_init ()
+rbmash_model_init ()
 {
-  VALUE klass = G_DEF_CLASS (CLUTTER_PLY_TYPE_MODEL, "Model",
-                             rbcltply_c_clutter_ply);
+  VALUE klass = G_DEF_CLASS (MASH_TYPE_MODEL, "Model",
+                             rbmash_c_mash);
 
-  rb_define_method (klass, "initialize", rbcltply_model_initialize, -1);
+  rb_define_method (klass, "initialize", rbmash_model_initialize, -1);
 }

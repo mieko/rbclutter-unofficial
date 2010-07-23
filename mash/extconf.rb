@@ -23,14 +23,14 @@ TOPDIR = File.expand_path(File.dirname(__FILE__) + '/..')
 
 PKGConfig.have_package('glib-2.0') or show_fail
 PKGConfig.have_package('clutter-1.0', 1, 2, 0) or show_fail
-PKGConfig.have_package('clutter-ply') or show_fail
+PKGConfig.have_package('mash-0.0') or show_fail
 
 find_header("rbgobject.h", *$:) or show_fail
 
 add_depend_package("clutter", "clutter", TOPDIR)
 
-$objs = %w{ rbclutterply.o rbcltplymodel.o rbcltplydata.o }
+$objs = %w{ rbmash.o rbmashmodel.o rbmashdata.o }
 
-$INSTALLFILES = [ [ "clutter_ply.rb", "$(RUBYLIBDIR)" ] ]
+$INSTALLFILES = [ [ "mash.rb", "$(RUBYLIBDIR)" ] ]
 
-create_makefile("clutter_ply")
+create_makefile("mash")

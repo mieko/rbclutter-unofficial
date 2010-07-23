@@ -18,16 +18,16 @@
  */
 
 #include <rbgobject.h>
-#include <clutter-ply/clutter-ply.h>
+#include <mash/mash.h>
 
-#include "rbclutterply.h"
+#include "rbmash.h"
 
 static VALUE
-rbcltply_data_initialize (VALUE self)
+rbmash_data_initialize (VALUE self)
 {
-  ClutterPlyData *data;
+  MashData *data;
 
-  data = clutter_ply_data_new ();
+  data = mash_data_new ();
 
   G_INITIALIZE (self, data);
 
@@ -35,34 +35,34 @@ rbcltply_data_initialize (VALUE self)
 }
 
 static VALUE
-rbcltply_data_load (VALUE self, VALUE filename)
+rbmash_data_load (VALUE self, VALUE filename)
 {
-  ClutterPlyData *data = CLUTTER_PLY_DATA (RVAL2GOBJ (self));
+  MashData *data = MASH_DATA (RVAL2GOBJ (self));
   GError *error = NULL;
 
-  if (!clutter_ply_data_load (data, StringValuePtr (filename), &error))
+  if (!mash_data_load (data, StringValuePtr (filename), &error))
     RAISE_GERROR (error);
 
   return self;
 }
 
 static VALUE
-rbcltply_data_render (VALUE self)
+rbmash_data_render (VALUE self)
 {
-  ClutterPlyData *data = CLUTTER_PLY_DATA (RVAL2GOBJ (self));
+  MashData *data = MASH_DATA (RVAL2GOBJ (self));
 
-  clutter_ply_data_render (data);
+  mash_data_render (data);
 
   return self;
 }
 
 static VALUE
-rbcltply_data_get_extents (VALUE self)
+rbmash_data_get_extents (VALUE self)
 {
-  ClutterPlyData *data = CLUTTER_PLY_DATA (RVAL2GOBJ (self));
+  MashData *data = MASH_DATA (RVAL2GOBJ (self));
   ClutterVertex min_vertex, max_vertex;
 
-  clutter_ply_data_get_extents (data, &min_vertex, &max_vertex);
+  mash_data_get_extents (data, &min_vertex, &max_vertex);
 
   return rb_ary_new3 (2,
                       BOXED2RVAL (&min_vertex, CLUTTER_TYPE_VERTEX),
@@ -70,16 +70,16 @@ rbcltply_data_get_extents (VALUE self)
 }
 
 void
-rbcltply_data_init ()
+rbmash_data_init ()
 {
-  VALUE klass = G_DEF_CLASS (CLUTTER_PLY_TYPE_DATA, "Data",
-                             rbcltply_c_clutter_ply);
+  VALUE klass = G_DEF_CLASS (MASH_TYPE_DATA, "Data",
+                             rbmash_c_mash);
 
-  rb_define_method (klass, "initialize", rbcltply_data_initialize, 0);
-  rb_define_method (klass, "load", rbcltply_data_load, 1);
-  rb_define_method (klass, "render", rbcltply_data_render, 0);
-  rb_define_method (klass, "extents", rbcltply_data_get_extents, 0);
+  rb_define_method (klass, "initialize", rbmash_data_initialize, 0);
+  rb_define_method (klass, "load", rbmash_data_load, 1);
+  rb_define_method (klass, "render", rbmash_data_render, 0);
+  rb_define_method (klass, "extents", rbmash_data_get_extents, 0);
 
-  G_DEF_ERROR (CLUTTER_PLY_DATA_ERROR, "Error", klass,
-               rb_eRuntimeError, CLUTTER_PLY_TYPE_DATA_ERROR);
+  G_DEF_ERROR (MASH_DATA_ERROR, "Error", klass,
+               rb_eRuntimeError, MASH_TYPE_DATA_ERROR);
 }

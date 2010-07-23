@@ -4,4 +4,4 @@
 # clutter_ply.so so that it can reference symbols in clutter.so
 
 require 'clutter'
-require 'clutter_ply.so'
+require 'mash.so'

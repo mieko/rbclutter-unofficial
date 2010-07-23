@@ -1,15 +1,15 @@
 $:.unshift File.join(File.dirname(__FILE__), '..' , 'clutter')
-$:.unshift File.join(File.dirname(__FILE__), '..' , 'clutter-ply')
+$:.unshift File.join(File.dirname(__FILE__), '..' , 'mash')
 $:.unshift File.join(File.dirname(__FILE__))
 require 'clutter-init'
-require 'clutter_ply'
+require 'mash'
 require 'test/unit'
 
-class TC_ClutterPlyData < Test::Unit::TestCase
+class TC_MashData < Test::Unit::TestCase
   CUBE_PLY = File.join(File.dirname(__FILE__), 'cube.ply')
 
   def setup
-    @data = Clutter::Ply::Data.new
+    @data = Mash::Data.new
   end
 
   def teardown
@@ -21,7 +21,7 @@ class TC_ClutterPlyData < Test::Unit::TestCase
   end
 
   def test_load_fail
-    assert_raise(Clutter::Ply::Data::Error) do
+    assert_raise(Mash::Data::Error) do
       @data.load("/not/a/real/file/hopefully")
     end
   end

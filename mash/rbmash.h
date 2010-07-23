@@ -1,5 +1,5 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
- * Copyright (C) 2007  Neil Roberts
+ * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,26 +17,12 @@
  * MA  02110-1301  USA
  */
 
+#ifndef _RBMASH_H
+#define _RBMASH_H
+
 #include <ruby.h>
-#include <rbgobject.h>
-#include <clutter-ply/clutter-ply.h>
+#include <glib.h>
 
-#include "rbclutter.h"
-#include "rbclutterply.h"
+extern VALUE rbmash_c_mash;
 
-VALUE rbcltply_c_clutter_ply = Qnil;
-
-extern void rbcltply_data_init ();
-extern void rbcltply_model_init ();
-
-void
-Init_clutter_ply ()
-{
-  rb_require ("glib2");
-  rb_require ("clutter");
-
-  rbcltply_c_clutter_ply = rb_define_module_under (rbclt_c_clutter, "Ply");
-
-  rbcltply_data_init ();
-  rbcltply_model_init ();
-}
+#endif /* _RBMASH_H */
