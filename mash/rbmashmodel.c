@@ -27,16 +27,18 @@ static VALUE
 rbmash_model_initialize (int argc, VALUE *argv, VALUE self)
 {
   ClutterActor *model;
-  VALUE filename;
+  VALUE flags, filename;
 
-  rb_scan_args (argc, argv, "01", &filename);
+  rb_scan_args (argc, argv, "02", &flags, &filename);
 
   if (NIL_P (filename))
     model = mash_model_new ();
   else
     {
       GError *error = NULL;
-      model = mash_model_new_from_file (StringValuePtr (filename),
+      model = mash_model_new_from_file (RVAL2GENUM (flags,
+                                                    MASH_TYPE_DATA_FLAGS),
+                                        StringValuePtr (filename),
                                         &error);
       if (model == NULL)
         RAISE_GERROR (error);

@@ -17,12 +17,12 @@ class TC_MashData < Test::Unit::TestCase
   end
 
   def test_load
-    assert_equal(@data.load(CUBE_PLY), @data)
+    assert_equal(@data.load(Mash::Data::NONE, CUBE_PLY), @data)
   end
 
   def test_load_fail
     assert_raise(Mash::Data::Error) do
-      @data.load("/not/a/real/file/hopefully")
+      @data.load(Mash::Data::NONE, "/not/a/real/file/hopefully")
     end
   end
 
@@ -37,7 +37,7 @@ class TC_MashData < Test::Unit::TestCase
   end
 
   def test_extents
-    @data.load(CUBE_PLY)
+    @data.load(Mash::Data::NONE, CUBE_PLY)
     assert_kind_of(Array, @data.extents)
     assert_equal(@data.extents.length, 2)
     check_vertex_equal(@data.extents[0],

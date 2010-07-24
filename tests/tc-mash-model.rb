@@ -9,7 +9,7 @@ class TC_MashModel < Test::Unit::TestCase
   CUBE_PLY = File.join(File.dirname(__FILE__), 'cube.ply')
 
   def setup
-    @model = Mash::Model.new(CUBE_PLY)
+    @model = Mash::Model.new(Mash::Data::NONE, CUBE_PLY)
   end
 
   def teardown
@@ -18,12 +18,12 @@ class TC_MashModel < Test::Unit::TestCase
 
   def test_new_from_file
     assert_kind_of(Mash::Model,
-                   Mash::Model.new(CUBE_PLY))
+                   Mash::Model.new(Mash::Data::NONE, CUBE_PLY))
   end
 
   def test_new_from_file_fail
     assert_raise(Mash::Data::Error) do
-      Mash::Model.new("/not/a/real/file/hopefully")
+      Mash::Model.new(Mash::Data::NONE, "/not/a/real/file/hopefully")
     end
   end
 

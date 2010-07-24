@@ -35,12 +35,15 @@ rbmash_data_initialize (VALUE self)
 }
 
 static VALUE
-rbmash_data_load (VALUE self, VALUE filename)
+rbmash_data_load (VALUE self, VALUE flags, VALUE filename)
 {
   MashData *data = MASH_DATA (RVAL2GOBJ (self));
   GError *error = NULL;
 
-  if (!mash_data_load (data, StringValuePtr (filename), &error))
+  if (!mash_data_load (data,
+                       RVAL2GENUM (flags, MASH_TYPE_DATA_FLAGS),
+                       StringValuePtr (filename),
+                       &error))
     RAISE_GERROR (error);
 
   return self;
@@ -75,8 +78,11 @@ rbmash_data_init ()
   VALUE klass = G_DEF_CLASS (MASH_TYPE_DATA, "Data",
                              rbmash_c_mash);
 
+  G_DEF_CLASS (MASH_TYPE_DATA_FLAGS, "Flags", klass);
+  G_DEF_CONSTANTS (klass, MASH_TYPE_DATA_FLAGS, "MASH_DATA_");
+
   rb_define_method (klass, "initialize", rbmash_data_initialize, 0);
-  rb_define_method (klass, "load", rbmash_data_load, 1);
+  rb_define_method (klass, "load", rbmash_data_load, 2);
   rb_define_method (klass, "render", rbmash_data_render, 0);
   rb_define_method (klass, "extents", rbmash_data_get_extents, 0);
 
