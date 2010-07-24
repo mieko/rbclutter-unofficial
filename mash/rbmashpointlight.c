@@ -1,5 +1,5 @@
 /* Ruby bindings for the Clutter 'interactive canvas' library.
- * Copyright (C) 2007  Neil Roberts
+ * Copyright (C) 2010  Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,36 +17,27 @@
  * MA  02110-1301  USA
  */
 
-#include <ruby.h>
 #include <rbgobject.h>
 #include <mash/mash.h>
 
 #include "rbclutter.h"
 #include "rbmash.h"
 
-VALUE rbmash_c_mash = Qnil;
+static VALUE
+rbmash_point_light_initialize (VALUE self)
+{
+  ClutterActor *box = mash_point_light_new ();
 
-extern void rbmash_data_init ();
-extern void rbmash_model_init ();
-extern void rbmash_light_box_init ();
-extern void rbmash_light_init ();
-extern void rbmash_directional_light_init ();
-extern void rbmash_point_light_init ();
-extern void rbmash_spot_light_init ();
+  rbclt_initialize_unowned (self, box);
+
+  return Qnil;
+}
 
 void
-Init_mash ()
+rbmash_point_light_init ()
 {
-  rb_require ("glib2");
-  rb_require ("clutter");
+  VALUE klass = G_DEF_CLASS (MASH_TYPE_POINT_LIGHT, "PointLight",
+                             rbmash_c_mash);
 
-  rbmash_c_mash = rb_define_module ("Mash");
-
-  rbmash_data_init ();
-  rbmash_model_init ();
-  rbmash_light_box_init ();
-  rbmash_light_init ();
-  rbmash_directional_light_init ();
-  rbmash_point_light_init ();
-  rbmash_spot_light_init ();
+  rb_define_method (klass, "initialize", rbmash_point_light_initialize, 0);
 }

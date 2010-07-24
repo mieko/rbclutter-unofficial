@@ -29,7 +29,9 @@ find_header("rbgobject.h", *$:) or show_fail
 
 add_depend_package("clutter", "clutter", TOPDIR)
 
-$objs = %w{ rbmash.o rbmashmodel.o rbmashdata.o }
+$objs = %w{ rbmash.o rbmashmodel.o rbmashdata.o } +
+  %w{ rbmashlightbox.o rbmashlight.o rbmashdirectionallight.o } +
+  %w{ rbmashpointlight.o rbmashspotlight.o }
 
 $INSTALLFILES = [ [ "mash.rb", "$(RUBYLIBDIR)" ] ]
 
