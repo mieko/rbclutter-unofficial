@@ -137,6 +137,14 @@ rb_cogl_get_viewport (VALUE self)
 }
 
 static VALUE
+rb_cogl_set_backface_culling_enabled (VALUE self, VALUE v)
+{
+  cogl_set_backface_culling_enabled (RTEST (v));
+
+  return Qnil;
+}
+
+static VALUE
 rb_cogl_set_depth_test_enabled (VALUE self, VALUE v)
 {
   cogl_set_depth_test_enabled (RTEST (v));
@@ -185,6 +193,8 @@ rb_cogl_init ()
                               rb_cogl_get_viewport, 0);
   rb_define_singleton_method (rbclt_c_cogl, "set_depth_test_enabled",
                               rb_cogl_set_depth_test_enabled, 1);
+  rb_define_singleton_method (rbclt_c_cogl, "set_backface_culling_enabled",
+                              rb_cogl_set_backface_culling_enabled, 1);
   rb_define_singleton_method (rbclt_c_cogl, "set_source",
                               rb_cogl_set_source, 1);
 }
