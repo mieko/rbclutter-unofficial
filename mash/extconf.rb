@@ -23,7 +23,7 @@ TOPDIR = File.expand_path(File.dirname(__FILE__) + '/..')
 
 PKGConfig.have_package('glib-2.0') or show_fail
 PKGConfig.have_package('clutter-1.0', 1, 2, 0) or show_fail
-PKGConfig.have_package('mash-0.0') or show_fail
+PKGConfig.have_package('mash-0.1') or show_fail
 
 find_header("rbgobject.h", *$:) or show_fail
 
