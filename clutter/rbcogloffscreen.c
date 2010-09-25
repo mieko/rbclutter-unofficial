@@ -45,6 +45,27 @@ rb_cogl_offscreen_initialize (VALUE self, VALUE tex)
   return Qnil;
 }
 
+static VALUE
+rb_cogl_pop_framebuffer (VALUE self)
+{
+  cogl_pop_framebuffer ();
+  return Qnil;
+}
+
+static VALUE
+rb_cogl_push_framebuffer (VALUE self, VALUE buffer)
+{
+  cogl_push_framebuffer (rb_cogl_handle_get_handle(buffer));
+  return Qnil;
+}
+
+static VALUE
+rb_cogl_set_framebuffer (VALUE self, VALUE buffer)
+{
+  cogl_set_framebuffer (rb_cogl_handle_get_handle(buffer));
+  return Qnil;
+}
+
 void
 rb_cogl_offscreen_init ()
 {
@@ -54,4 +75,11 @@ rb_cogl_offscreen_init ()
                                                      rb_eStandardError);
 
   rb_define_method (klass, "initialize", rb_cogl_offscreen_initialize, 1);
+
+  rb_define_singleton_method(rbclt_c_cogl, "pop_framebuffer",
+                             rb_cogl_pop_framebuffer, 0);
+  rb_define_singleton_method(rbclt_c_cogl, "push_framebuffer",
+                             rb_cogl_push_framebuffer, 1);
+  rb_define_singleton_method(rbclt_c_cogl, "set_framebuffer",
+                             rb_cogl_set_framebuffer, 1);
 }

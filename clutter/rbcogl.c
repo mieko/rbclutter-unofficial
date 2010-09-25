@@ -137,6 +137,14 @@ rb_cogl_get_viewport (VALUE self)
 }
 
 static VALUE
+rb_cogl_set_viewport (VALUE self, VALUE x, VALUE y, VALUE width, VALUE height)
+{
+  cogl_set_viewport (NUM2INT (x), NUM2INT (y), NUM2INT (width),
+                     NUM2INT (height));
+  return Qnil;
+}
+
+static VALUE
 rb_cogl_set_backface_culling_enabled (VALUE self, VALUE v)
 {
   cogl_set_backface_culling_enabled (RTEST (v));
@@ -157,6 +165,15 @@ rb_cogl_set_source (VALUE self, VALUE source)
 {
   CoglHandle handle = rb_cogl_handle_get_handle (source);
   cogl_set_source (handle);
+  return Qnil;
+}
+
+static VALUE
+rb_cogl_clear (VALUE self, VALUE color, VALUE buffers)
+{
+  rb_cogl_assert_is_kind_of_color (color);
+  cogl_clear ( (CoglColor*) rb_cogl_color_get_pointer (color),
+               NUM2UINT (buffers));
   return Qnil;
 }
 
@@ -191,10 +208,16 @@ rb_cogl_init ()
                               rb_cogl_get_modelview_matrix, 0);
   rb_define_singleton_method (rbclt_c_cogl, "get_viewport",
                               rb_cogl_get_viewport, 0);
+  rb_define_singleton_method (rbclt_c_cogl, "set_viewport",
+                              rb_cogl_set_viewport, 4);
   rb_define_singleton_method (rbclt_c_cogl, "set_depth_test_enabled",
                               rb_cogl_set_depth_test_enabled, 1);
   rb_define_singleton_method (rbclt_c_cogl, "set_backface_culling_enabled",
                               rb_cogl_set_backface_culling_enabled, 1);
   rb_define_singleton_method (rbclt_c_cogl, "set_source",
                               rb_cogl_set_source, 1);
+
+  rb_define_singleton_method (rbclt_c_cogl, "clear",
+                              rb_cogl_clear, 2);
+  G_DEF_CLASS (COGL_TYPE_BUFFER_BIT, "BufferBit", rbclt_c_cogl);
 }

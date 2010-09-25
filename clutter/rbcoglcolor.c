@@ -67,11 +67,11 @@ rb_cogl_color_initialize (int argc, VALUE *argv, VALUE self)
 
   rb_scan_args (argc, argv, "04", &red, &green, &blue, &alpha);
 
-  cogl_color_set_from_4f (color,
-                          NIL_P (red) ? 0.0f : NUM2DBL (red),
-                          NIL_P (green) ? 0.0f : NUM2DBL (green),
-                          NIL_P (blue) ? 0.0f : NUM2DBL (blue),
-                          NIL_P (alpha) ? 1.0f : NUM2DBL (alpha));
+  cogl_color_init_from_4f (color,
+                           NIL_P (red) ? 0.0f : NUM2DBL (red),
+                           NIL_P (green) ? 0.0f : NUM2DBL (green),
+                           NIL_P (blue) ? 0.0f : NUM2DBL (blue),
+                           NIL_P (alpha) ? 1.0f : NUM2DBL (alpha));
 
   return Qnil;
 }
@@ -117,7 +117,7 @@ rb_cogl_color_to_a (VALUE self)
 {
   CoglColor *color;
   VALUE array_values[G_N_ELEMENTS (rb_cogl_color_float_accessors)];
-  int i;
+  size_t i;
 
   Data_Get_Struct (self, CoglColor, color);
 
@@ -189,8 +189,32 @@ static VALUE
 rb_cogl_color_premultiply (VALUE self)
 {
   VALUE copy = rb_cogl_color_alloc ();
+
   rb_cogl_color_initialize_copy (copy, self);
+
   return rb_cogl_color_premultiply_bang (copy);
+}
+
+static VALUE
+rb_cogl_color_unpremultiply_bang (VALUE self)
+{
+  CoglColor *color;
+
+  Data_Get_Struct (self, CoglColor, color);
+
+  cogl_color_unpremultiply (color);
+
+  return self;
+}
+
+static VALUE
+rb_cogl_color_unpremultiply (VALUE self)
+{
+  VALUE copy = rb_cogl_color_alloc ();
+
+  rb_cogl_color_initialize_copy (copy, self);
+
+  return rb_cogl_color_unpremultiply_bang (copy);
 }
 
 static VALUE
@@ -264,6 +288,9 @@ rb_cogl_color_init ()
 
   rb_define_method (klass, "premultiply!", rb_cogl_color_premultiply_bang, 0);
   rb_define_method (klass, "premultiply", rb_cogl_color_premultiply, 0);
+  rb_define_method (klass, "unpremultiply!",
+                    rb_cogl_color_unpremultiply_bang, 0);
+  rb_define_method (klass, "unpremultiply", rb_cogl_color_unpremultiply, 0);
   rb_define_method (klass, "==", rb_cogl_color_equal, 1);
 
   RB_COGL_COMPONENT_ACCESSOR (red);

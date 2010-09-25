@@ -93,6 +93,9 @@ extern void rb_cogl_material_init ();
 extern void rb_cogl_bitmap_init ();
 extern void rb_cogl_vertex_buffer_init ();
 
+extern void rb_cogl_clip_init ();
+extern void rb_cogl_vector3_init ();
+
 VALUE
 rbclt_call_init_func (int argc, VALUE *argv, RBCLTInitFunc func)
 {
@@ -354,4 +357,7 @@ Init_clutter ()
   rb_cogl_material_init ();
   rb_cogl_bitmap_init ();
   rb_cogl_vertex_buffer_init ();
+
+  rb_cogl_clip_init ();
+  rb_cogl_vector3_init ();
 }

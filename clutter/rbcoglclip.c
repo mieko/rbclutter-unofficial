@@ -23,43 +23,54 @@
 #include "rbclutter.h"
 
 static VALUE
-rb_cogl_clip_push_rectangle(VALUE self, VALUE x0, VALUE y0, VALUE x1, VALUE y1)
+rb_cogl_clip_push_rectangle (VALUE self, VALUE x0, VALUE y0,
+                                         VALUE x1, VALUE y1)
 {
-  cogl_clip_push_rectangle(NUM2DBL(x0), NUM2DBL(y0), NUM2DBL(x1), NUM2DBL(y1));
+  cogl_clip_push_rectangle (NUM2DBL (x0), NUM2DBL (y0),
+                            NUM2DBL (x1), NUM2DBL (y1));
   return Qnil;
 }
 
 static VALUE
-rb_cogl_clip_push_from_path(VALUE self)
+rb_cogl_clip_push_window_rectangle (VALUE self, VALUE x_offset, VALUE y_offset,
+                                    VALUE width, VALUE height)
 {
-  cogl_clip_push_from_path();
+  cogl_clip_push_window_rectangle (NUM2INT (x_offset), NUM2INT (y_offset),
+                                   NUM2INT (width), NUM2INT (height));
   return Qnil;
 }
 
 static VALUE
-rb_cogl_clip_push_from_path_preserve(VALUE self)
+rb_cogl_clip_push_from_path (VALUE self)
 {
-  cogl_clip_push_from_path_preserve();
+  cogl_clip_push_from_path ();
   return Qnil;
 }
 
 static VALUE
-rb_cogl_clip_pop(VALUE self)
+rb_cogl_clip_push_from_path_preserve (VALUE self)
 {
-  cogl_clip_pop();
+  cogl_clip_push_from_path_preserve ();
+  return Qnil;
+}
+
+static VALUE
+rb_cogl_clip_pop (VALUE self)
+{
+  cogl_clip_pop ();
   return Qnil;
 }
 
 void
-rb_cogl_clip_init()
+rb_cogl_clip_init ()
 {
-  rb_define_singleton_method(rbclt_c_cogl, "clip_push_rectangle",
-                             rb_cogl_clip_push_rectangle, 4);
-  rb_define_singleton_method(rbclt_c_cogl, "clip_push_window_rectangle",
-                             rb_cogl_clip_push_window_rectangle, 4);
-  rb_define_singleton_method(rbclt_c_cogl, "clip_push_from_path",
-                             rb_cogl_clip_push_from_path, 0);
-  rb_define_singleton_method(rbclt_c_cogl, "clip_push_from_path_preserve",
-                             rb_cogl_clip_push_from_path_preserve, 0);
-  rb_define_singleton_method(rbclt_c_cogl, "clip_pop", rb_cogl_clip_pop, 0);
+  rb_define_singleton_method (rbclt_c_cogl, "clip_push_rectangle",
+                              rb_cogl_clip_push_rectangle, 4);
+  rb_define_singleton_method (rbclt_c_cogl, "clip_push_window_rectangle",
+                              rb_cogl_clip_push_window_rectangle, 4);
+  rb_define_singleton_method (rbclt_c_cogl, "clip_push_from_path",
+                              rb_cogl_clip_push_from_path, 0);
+  rb_define_singleton_method (rbclt_c_cogl, "clip_push_from_path_preserve",
+                              rb_cogl_clip_push_from_path_preserve, 0);
+  rb_define_singleton_method (rbclt_c_cogl, "clip_pop", rb_cogl_clip_pop, 0);
 }

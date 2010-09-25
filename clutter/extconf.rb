@@ -45,6 +45,8 @@ $objs += %w{ rbcogl.o rbcogltexture.o rbcoglprimitives.o } \
 + %w{ rbcoglhandle.o rbcoglcolor.o rbcoglmaterial.o rbcoglbitmap.o } \
 + %w{ rbcoglvertexbuffer.o }
 
+$objs += %w(rbcoglclip.o rbcoglvector3.o)
+
 # Add the boxed types to the object files list
 BOXED_TYPES.each { |bt| $objs << "rbclt#{bt}.o" }
 # Add the boxed type source files to the clean list

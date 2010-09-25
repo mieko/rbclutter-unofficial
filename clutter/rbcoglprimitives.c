@@ -29,7 +29,7 @@ struct _PolyData
   int argc;
   VALUE *argv;
   float *points;
-  void (* func) (float *coords, gint num_points);
+  void (* func) (const float *coords, gint num_points);
 };
 
 static VALUE
@@ -309,6 +309,35 @@ rb_cogl_path_polygon (int argc, VALUE *argv, VALUE self)
   return rb_cogl_poly_func (&data);
 }
 
+static VALUE
+rb_cogl_get_path (VALUE self)
+{
+  rb_raise (rb_eNotImpError, "get_path unimplemented");
+  return Qnil;
+}
+
+static VALUE
+rb_cogl_set_path (VALUE self, VALUE path)
+{
+  rb_raise (rb_eNotImpError, "set_path unimplemented");
+  return self;
+}
+
+static VALUE
+rb_cogl_path_copy (VALUE self)
+{
+  rb_raise (rb_eNotImpError, "path_copy unimplemented");
+  return Qnil;
+}
+
+static void
+rb_cogl_path_init ()
+{
+  VALUE klass = rb_cogl_define_handle (cogl_is_path, "Path");
+  rb_define_method(klass, "dup", rb_cogl_path_copy, 0);
+}
+
+
 void
 rb_cogl_primitives_init ()
 {
@@ -346,4 +375,9 @@ rb_cogl_primitives_init ()
                               rb_cogl_path_polyline, -1);
   rb_define_singleton_method (rbclt_c_cogl, "path_polygon",
                               rb_cogl_path_polygon, -1);
+  rb_define_singleton_method (rbclt_c_cogl, "get_path",
+                              rb_cogl_get_path, 0);
+  rb_define_singleton_method (rbclt_c_cogl, "set_path",
+                              rb_cogl_set_path, 1);
+  rb_cogl_path_init ();
 }

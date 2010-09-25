@@ -1,7 +1,7 @@
-Ruby-Clutter -- Ruby bindings for Clutter-0.8.x
+Ruby-Clutter -- Ruby bindings for Clutter-1.4
 ===============================================
 
-This is a set of bindings for the Clutter 0.8 libraries for use from
+This is a set of bindings for the Clutter 1.4 libraries for use from
 Ruby.
 
 Install
@@ -18,7 +18,7 @@ Dependencies
 To install the bindings the following is also needed:
 
  - Ruby >= 1.8
- - Clutter 0.8.x
+ - Clutter 1.3.x
  - Ruby GLib bindings
 
 The optional clutter-gtk bindings depend on the Ruby GTK+ bindings and
