@@ -235,6 +235,31 @@ rbclt_connect_flags_get_type (void)
   return etype;
 }
 
+static void 
+rbclt_possibly_auto_init ()
+{
+  VALUE defer_init = Qnil;
+  ID defer_init_c = rb_intern("DEFER_INIT");
+ 
+  /* "Unless Clutter::DEFER_INIT is initialized to a truthy-value, 
+   *   when 'clutter' is require'd, Clutter.init will be called with
+   *   no arguments."
+   *
+   * We call this at a high-ish/Ruby level so it can be truthfully 
+   * documented, and avoid the annoying issues that crop up when 
+   * native code skips a step (see: autoload issues with require 
+   * vs. rb_require.)
+   */
+
+  if (rb_const_defined (rbclt_c_clutter, defer_init_c)) {
+    defer_init = rb_const_get (rbclt_c_clutter, defer_init_c);
+  }
+
+  if (!RTEST (defer_init)) {
+   rb_funcall (rbclt_c_clutter, rb_intern("init"), 0);
+  }
+}
+
 void
 Init_clutter ()
 {
@@ -360,4 +385,6 @@ Init_clutter ()
 
   rb_cogl_clip_init ();
   rb_cogl_vector3_init ();
+
+  rbclt_possibly_auto_init ();
 }
