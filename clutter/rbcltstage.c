@@ -148,6 +148,23 @@ rbclt_stage_is_default (VALUE self)
   return clutter_stage_is_default (stage) ? Qtrue : Qfalse;
 }
 
+static VALUE
+rbclt_stage_ensure_redraw (VALUE self)
+{
+  ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
+  clutter_stage_ensure_redraw (stage);
+  return Qnil;
+}
+
+static VALUE
+rbclt_stage_ensure_viewport (VALUE self)
+{
+  ClutterStage *stage = CLUTTER_STAGE (RVAL2GOBJ (self));
+  clutter_stage_ensure_viewport (stage);
+  return Qnil;
+}
+
+
 void
 rbclt_stage_init ()
 {
@@ -165,6 +182,8 @@ rbclt_stage_init ()
   rb_define_method (klass, "key_focus", rbclt_stage_get_key_focus, 0);
   rb_define_method (klass, "ensure_current", rbclt_stage_ensure_current, 0);
   rb_define_method (klass, "default?", rbclt_stage_is_default, 0);
+  rb_define_method (klass, "ensure_redraw", rbclt_stage_ensure_redraw, 0);
+  rb_define_method (klass, "ensure_viewport", rbclt_stage_ensure_viewport, 0);
 
   G_DEF_SETTERS (klass);
 }
