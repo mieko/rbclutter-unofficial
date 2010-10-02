@@ -24,6 +24,8 @@
 #include "rbclutter.h"
 #include "rbcoglhandle.h"
 
+CoglUserDataKey rbclt_user_data_key;
+
 VALUE rb_c_cogl_handle;
 
 static GSList *rb_cogl_handle_types = NULL;
@@ -53,7 +55,14 @@ rb_cogl_handle_to_value (CoglHandle handle)
   else
     {
       GSList *l;
-      VALUE klass = rb_c_cogl_handle;;
+      VALUE klass = rb_c_cogl_handle;
+
+      /* This is VALUE-reusing currently half-baked and is being investigated 
+       * ref-count vs. GC issues exist */
+      void *data = cogl_object_get_user_data (handle, &rbclt_user_data_key);
+
+      if (data)
+        return (VALUE) data;
 
       for (l = rb_cogl_handle_types; l; l = l->next)
         {
@@ -71,6 +80,7 @@ rb_cogl_handle_to_value (CoglHandle handle)
       RBASIC (ret)->klass = klass;
     }
 
+  cogl_object_set_user_data (handle, &rbclt_user_data_key, (void *)ret, NULL);
   return ret;
 }
 
