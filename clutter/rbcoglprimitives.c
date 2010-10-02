@@ -312,31 +312,31 @@ rb_cogl_path_polygon (int argc, VALUE *argv, VALUE self)
 static VALUE
 rb_cogl_get_path (VALUE self)
 {
-  rb_raise (rb_eNotImpError, "get_path unimplemented");
-  return Qnil;
+  return rb_cogl_handle_to_value ((CoglHandle *) cogl_get_path ());
 }
 
 static VALUE
 rb_cogl_set_path (VALUE self, VALUE path)
 {
-  rb_raise (rb_eNotImpError, "set_path unimplemented");
-  return self;
+  cogl_set_path ((CoglPath *) rb_cogl_handle_get_handle (path));
+  return Qnil;
 }
 
 static VALUE
-rb_cogl_path_copy (VALUE self)
+rb_cogl_path_dup (VALUE self)
 {
-  rb_raise (rb_eNotImpError, "path_copy unimplemented");
-  return Qnil;
+  CoglPath *src = (CoglPath *) rb_cogl_handle_get_handle (self);
+  CoglPath *dst = cogl_path_copy (src);
+
+  return rb_cogl_handle_get_handle (dst);
 }
 
 static void
 rb_cogl_path_init ()
 {
   VALUE klass = rb_cogl_define_handle (cogl_is_path, "Path");
-  rb_define_method(klass, "dup", rb_cogl_path_copy, 0);
+  rb_define_method(klass, "dup", rb_cogl_path_dup, 0);
 }
-
 
 void
 rb_cogl_primitives_init ()
