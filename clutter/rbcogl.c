@@ -177,6 +177,28 @@ rb_cogl_clear (VALUE self, VALUE color, VALUE buffers)
   return Qnil;
 }
 
+static VALUE
+rb_cogl_flush (VALUE self)
+{
+  cogl_flush ();
+  return Qnil;
+}
+
+static VALUE
+rb_cogl_begin_gl (VALUE self)
+{
+  cogl_begin_gl ();
+  return Qnil;
+}
+
+static VALUE
+rb_cogl_end_gl (VALUE self)
+{
+  cogl_end_gl ();
+  return Qnil;
+}
+
+
 void
 rb_cogl_init ()
 {
@@ -216,8 +238,15 @@ rb_cogl_init ()
                               rb_cogl_set_backface_culling_enabled, 1);
   rb_define_singleton_method (rbclt_c_cogl, "set_source",
                               rb_cogl_set_source, 1);
-
   rb_define_singleton_method (rbclt_c_cogl, "clear",
                               rb_cogl_clear, 2);
+  rb_define_singleton_method (rbclt_c_cogl, "flush",
+                              rb_cogl_flush, 0);
+  rb_define_singleton_method (rbclt_c_cogl, "begin_gl",
+                              rb_cogl_begin_gl, 0);
+  rb_define_singleton_method (rbclt_c_cogl, "end_gl",
+                              rb_cogl_end_gl, 0);
+
+
   G_DEF_CLASS (COGL_TYPE_BUFFER_BIT, "BufferBit", rbclt_c_cogl);
 }
