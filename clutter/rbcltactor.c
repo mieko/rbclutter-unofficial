@@ -946,8 +946,8 @@ rbclt_actor_init ()
   rb_define_method (klass, "parent", rbclt_actor_parent, 0);
   rb_define_method (klass, "reparent", rbclt_actor_reparent, 1);
   rb_define_method (klass, "unparent", rbclt_actor_unparent, 0);
-  rb_define_method (klass, "raise", rbclt_actor_raise, 1);
-  rb_define_method (klass, "lower", rbclt_actor_lower, 1);
+  rb_define_method (klass, "raise_actor", rbclt_actor_raise, 1);
+  rb_define_method (klass, "lower_actor", rbclt_actor_lower, 1);
   rb_define_method (klass, "raise_top", rbclt_actor_raise_top, 0);
   rb_define_method (klass, "lower_bottom", rbclt_actor_lower_bottom, 0);
   rb_define_method (klass, "set_scale", rbclt_actor_set_scale, -1);
