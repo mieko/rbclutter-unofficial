@@ -82,6 +82,7 @@ rbclt_actor_mark (void *p)
 {
   ClutterActor *actor = CLUTTER_ACTOR (p);
   ClutterAnimation *anim;
+  GList *ef;
 
   /* We need to mark the animation object because this is accessible
      from Ruby so it may have a Ruby proxy object attached. The
@@ -90,6 +91,10 @@ rbclt_actor_mark (void *p)
 
   if ((anim = clutter_actor_get_animation (actor)))
     rbgobj_gc_mark_instance (anim);
+
+  /* mark all effects attached */
+  for (ef = clutter_actor_get_effects (actor); ef != NULL; ef = ef->next)
+    rbgobj_gc_mark_instance (CLUTTER_EFFECT (ef->data));
 }
 
 static VALUE
@@ -874,6 +879,17 @@ rbclt_actor_pop_internal (VALUE self)
   return self;
 }
 
+static VALUE
+rbclt_clutter_actor_add_effect (VALUE self, VALUE reffect)
+{
+  ClutterActor *actor = CLUTTER_ACTOR (RVAL2GOBJ (self));
+  ClutterEffect *effect = CLUTTER_EFFECT (RVAL2GOBJ (reffect));
+
+  clutter_actor_add_effect (actor, effect);
+
+  return Qnil;
+}
+
 void
 rbclt_actor_init ()
 {
@@ -1006,6 +1022,8 @@ rbclt_actor_init ()
   rb_define_method (klass, "set_flags", rbclt_actor_set_flags, 1);
   rb_define_method (klass, "unset_flags", rbclt_actor_unset_flags, 1);
   rb_define_method (klass, "flags", rbclt_actor_get_flags, 0);
+
+  rb_define_method (klass, "add_effect", rbclt_clutter_actor_add_effect, 1);
 
   rb_define_singleton_method (rbclt_c_clutter, "get_actor_by_gid",
                               rbclt_get_actor_by_gid, 1);

@@ -80,6 +80,8 @@ extern void rbclt_text_init ();
 extern void rbclt_animatable_init ();
 extern void rbclt_fixed_layout_init ();
 
+extern void rbclt_effects_init ();
+
 extern void rb_cogl_init ();
 extern void rb_cogl_handle_init ();
 extern void rb_cogl_texture_init ();
@@ -369,6 +371,8 @@ Init_clutter ()
   rbclt_text_init ();
   rbclt_animatable_init ();
   rbclt_fixed_layout_init ();
+
+  rbclt_effects_init ();
 
   rb_cogl_init ();
   rb_cogl_handle_init ();

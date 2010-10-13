@@ -40,6 +40,10 @@ $objs = %w{ rbclutter.o rbcltactor.o rbcltalpha.o rbcltbehaviour.o rbcltbehaviou
 + %w{ rbcltinterval.o rbcltanimation.o rbclttext.o rbcltanimatable.o } \
 + %w{ rbcltfixedlayout.o }
 
+$objs += %w{ rbclteffects.o }
+
+
+
 $objs += %w{ rbcogl.o rbcogltexture.o rbcoglprimitives.o } \
 + %w{ rbcoglshader.o rbcoglprogram.o rbcogloffscreen.o rbcoglmatrix.o } \
 + %w{ rbcoglhandle.o rbcoglcolor.o rbcoglmaterial.o rbcoglbitmap.o } \

@@ -14,7 +14,7 @@ void rbclt_effects_init ()
   G_DEF_CLASS (CLUTTER_TYPE_ACTOR_META, "ActorMeta",
                rbclt_c_clutter);
 
-  mod = rb_define_module_under(rbclt_c_clutter, "Effect");
+  mod = rb_define_module_under (rbclt_c_clutter, "Effect");
   rbclt_c_clutter_effect = mod;
 
   G_DEF_CLASS (CLUTTER_TYPE_EFFECT, "Effect", mod);
